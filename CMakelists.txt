@@ -1,0 +1,8 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
+PROJECT(LJRat C)
+
+add_library(LJRat_DLL SHARED
+    src/LJRat.c
+)
+
+target_include_directories(LJRat_DLL PUBLIC include/)
