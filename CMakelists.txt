@@ -6,3 +6,12 @@ add_library(LJRat_DLL SHARED
 )
 
 target_include_directories(LJRat_DLL PUBLIC include/)
+target_compile_definitions(LJRat_DLL PUBLIC -DBUILD_DLL)
+target_link_libraries(LJRat_DLL ws2_32)
+
+add_executable(LJRat_EXE 
+    src/LJRat.c
+)
+
+target_include_directories(LJRat_EXE PUBLIC include/)
+target_link_libraries(LJRat_EXE ws2_32)

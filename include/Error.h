@@ -7,4 +7,4 @@ typedef enum _error_t {
 
 } ERROR_T;
 
-#endif
+#endif // ERROR_H

@@ -15,8 +15,12 @@
 
     #define EXPORT_FUNC __declspec(dllexport)
 
-#endif //BUILD_DLL
+#endif // BUILD_DLL
 
+#ifndef BUILD_DLL
+EXPORT_FUNC ERROR_T Run(INT argc, CHAR *argv[]);
+#else
 EXPORT_FUNC ERROR_T Run(VOID);
+#endif // BUILD_DLL
 
 #endif // LJRAT_H
