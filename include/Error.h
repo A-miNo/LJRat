@@ -1,6 +1,10 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-#define RAT_SUCCESS 0
+typedef enum _error_t {
+    E_SUCCESS = 0,
+    E_FAILIRE
+
+} ERROR_T;
 
 #endif
