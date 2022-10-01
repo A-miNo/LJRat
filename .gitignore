@@ -54,3 +54,4 @@ dkms.conf
 
 # Project specific filters
 build
+*__pycache__*

