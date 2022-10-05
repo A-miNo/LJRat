@@ -1,16 +1,16 @@
-#include "payload.h"
+#include "message.h"
 #include "error.h"
 #include "debug.h"
 #include <windows.h>
 
 
-ERROR_T PayloadSend(PPAYLOAD pPayload, SOCKET sock) {
+ERROR_T PaylSend(PMESSAGE pMessage, SOCKET sock) {
     INT iError = E_SUCCESS;
     DWORD dwBytesSent = 0;
     WSABUF buf = {0};
     
-    buf.buf = pPayload->pData;
-    buf.len = pPayload->hdr.dwPayloadSize;
+    buf.buf = pMessage->pData;
+    buf.len = pMessage->hdr.dwMessageSize;
 
     iError = WSASend(sock, &buf, 1, &dwBytesSent, 0, NULL, NULL);
     if (E_SUCCESS != iError) {
@@ -20,18 +20,18 @@ ERROR_T PayloadSend(PPAYLOAD pPayload, SOCKET sock) {
     return iError;
 }
 
-ERROR_T PayloadGenerate(DWORD dwCommandId, DWORD dwCommand, PVOID pData, DWORD dwDataLen, PPAYLOAD pPayload) {
+ERROR_T MessageGenerate(DWORD dwCommandId, DWORD dwCommand, PVOID pData, DWORD dwDataLen, PMESSAGE pMessage) {
     INT iError = E_SUCCESS;
 
-    if (NULL == pData || NULL == pPayload) {
+    if (NULL == pData || NULL == pMessage) {
         iError = E_NULL_ARG;
         goto end;
     }
 
-    pPayload->hdr.dwPayloadSize = PAYLOAD_HEADER_LEN + dwDataLen;
-    pPayload->pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pPayload->hdr.dwPayloadSize);
+    pMessage->hdr.dwMessageSize = MESSAGE_HEADER_LEN + dwDataLen;
+    pMessage->pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->hdr.dwMessageSize);
     
-    PBYTE pCursor = pPayload->pData;
+    PBYTE pCursor = pMessage->pData;
     
     *((PDWORD) pCursor) = dwDataLen;
     pCursor += sizeof(dwDataLen);
@@ -46,23 +46,23 @@ end:
     return iError;
 }
 
-ERROR_T PayloadReceive(SOCKET sock, PPAYLOAD *payload) {
+ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
     PBYTE pData = NULL;
-    PPAYLOAD pPayload = NULL;
+    PMESSAGE pMessage = NULL;
     WSABUF buf = {0};
     DWORD dwBytesReceived = 0;
-    INT iError = E_FAILURE;
+    INT iError = E_SUCCESS;
     DWORD dwFlags = 0;
 
-    pPayload = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(PAYLOAD));
-    if (NULL == pPayload) 
+    pMessage = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE));
+    if (NULL == pMessage) 
     {
         iError = E_MEMORY_ERROR;
         goto end;
     }
     
-    buf.len = sizeof(PAYLOAD_HEADER);
-    buf.buf = (PCHAR) &pPayload->hdr;
+    buf.len = sizeof(MESSAGE_HEADER);
+    buf.buf = (PCHAR) &pMessage->hdr;
 
     iError = WSARecv(sock, &buf, 1, &dwBytesReceived, &dwFlags, NULL, NULL);
 
@@ -71,18 +71,18 @@ ERROR_T PayloadReceive(SOCKET sock, PPAYLOAD *payload) {
         goto end;
     }
 
-    pPayload->hdr.dwPayloadSize = htonl(pPayload->hdr.dwPayloadSize);
-    DBG_PRINT("Payload size: %d\n", pPayload->hdr.dwPayloadSize);
+    pMessage->hdr.dwMessageSize = htonl(pMessage->hdr.dwMessageSize);
+    DBG_PRINT("Message size: %d\n", pMessage->hdr.dwMessageSize);
 
-    pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pPayload->hdr.dwPayloadSize);
+    pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->hdr.dwMessageSize);
     if (NULL == pData)
     {
         iError = E_MEMORY_ERROR;
         goto end;
     }
 
-    pPayload->pData = pData;
-    buf.len = pPayload->hdr.dwPayloadSize;
+    pMessage->pData = pData;
+    buf.len = pMessage->hdr.dwMessageSize;
     buf.buf = pData;
 
     iError = WSARecv(sock, &buf, 1, &dwBytesReceived, &dwFlags, NULL, NULL);
@@ -98,20 +98,20 @@ end:
 
     if (SOCKET_ERROR == iError || E_MEMORY_ERROR == iError)
     {
-        if (NULL != pPayload->pData)
+        if (NULL != pMessage->pData)
         {
-            HeapFree(GetProcessHeap(), 0, pPayload->pData);
-            pPayload->pData = NULL;
+            HeapFree(GetProcessHeap(), 0, pMessage->pData);
+            pMessage->pData = NULL;
         }
 
-        if (NULL != pPayload)
+        if (NULL != pMessage)
         {
-            HeapFree(GetProcessHeap(), 0, pPayload);
-            pPayload = NULL;
+            HeapFree(GetProcessHeap(), 0, pMessage);
+            pMessage = NULL;
         }
 
     }
 
-    *payload = pPayload;
+    *message = pMessage;
     return iError;
 }

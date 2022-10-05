@@ -68,7 +68,11 @@ class ServerThread(threading.Thread):
 
 
 def recv_data(sock):
-    data = sock.recv(12)
+    try:
+        data = sock.recv(12)
+    except ConnectionResetError as e:
+        return None
+        
     header = struct.unpack('III', data)
     #print(header)
     payload = sock.recv(header[0])

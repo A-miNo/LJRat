@@ -3,8 +3,9 @@ PROJECT(LJRat C)
 
 add_library(LJRat_DLL SHARED
     src/LJRat.c
-    src/payload.c
+    src/message.c
     src/session.c
+    src/list.c
 )
 
 target_include_directories(LJRat_DLL PUBLIC include/)
@@ -13,8 +14,9 @@ target_link_libraries(LJRat_DLL ws2_32)
 
 add_executable(LJRat_EXE 
     src/LJRat.c
-    src/payload.c
+    src/message.c
     src/session.c
+    src/list.c
 )
 
 target_include_directories(LJRat_EXE PUBLIC include/)

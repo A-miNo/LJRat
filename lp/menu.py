@@ -11,7 +11,7 @@ class Menu(cmd.Cmd):
     current_host = None
 
     def do_listen(self, arg):
-        '''Function to add a listener for an incoming connection'''
+        '''Listen for an incoming connection, [listen ip port alias]'''
 
         args = _parse_args(arg)
         args = validate_args(args, 3, _validate_listen_params)

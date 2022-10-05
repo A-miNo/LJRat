@@ -7,6 +7,8 @@
 #include <Windows.h>
 #include "Error.h"
 
+#define SHUTDOWN_INITIATED 1
+
 #ifndef BUILD_DLL
 
     #define EXPORT_FUNC
