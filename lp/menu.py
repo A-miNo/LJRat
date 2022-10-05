@@ -1,6 +1,4 @@
 import cmd
-from email.policy import default
-from wsgiref import validate
 import commands
 import ipaddress
 from globals import *
@@ -26,7 +24,7 @@ class Menu(cmd.Cmd):
         return True
 
     def do_interact(self, arg):
-        '''Function to interact with a target that has called back'''
+        '''Interact with target, [interact alias]'''
 
         self.current_host = host_list.hosts.get(arg, None)
         if self.current_host:
@@ -35,7 +33,7 @@ class Menu(cmd.Cmd):
             print("Target not found")
 
     def do_status(self, arg):
-        '''Function used to determine the connection status of a target'''
+        '''Query status of connection to target, [status]'''
 
         if not self.current_host:
             print("Must be interacting with target")
@@ -45,7 +43,7 @@ class Menu(cmd.Cmd):
         print(f"Status: {self.current_host.host_status_enum[status]}")
 
     def do_get(self, arg):
-        '''Function used to send a get tasking to the target. Function expects a single argument of the file that should be downloaded from target'''
+        '''Download a file from target, [get remote_file]'''
 
         if not self.current_host:
             print("Must be interacting with target")
@@ -62,17 +60,17 @@ class Menu(cmd.Cmd):
             print("Invalid arguments")
         
     def do_put(self, arg):
-        '''Function used to send a put tasking to the target. Function expects a single argument of the file that should be uploaded to target'''
+        '''Upload file to target at specified path, [put local_file remote_file]'''
 
         pass
 
     def do_execute(self, arg):
-        '''Function used to send a execute tasking to the target. Function expects a single argument of the command that should be executed on target'''
+        '''Execute command on target, [execute cmd]'''
 
         pass
 
     def do_list_targets(self, arg):
-        '''Function used to list all of the known targets'''
+        '''List all known targets, [list]'''
 
         pass
 
