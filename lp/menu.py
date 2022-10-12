@@ -126,6 +126,7 @@ def _validate_get_params(num, args):
     if num != len(args):
         return None
     else:
+        args[0] = args[0].encode() + b'\0'
         return {"CMD_TYPE": "GET", "REMOTE_FILE": args[0]}
 
 def _validate_put_params(num, args):
@@ -134,12 +135,15 @@ def _validate_put_params(num, args):
     if num != len(args):
         return None
     else:
+        args[0] = args[0].encode() + b'\0'
+        args[1] = args[1].encode() + b'\0'
         return {"CMD_TYPE": "PUT", "REMOTE_FILE": args[0], "LOCAL_FILE": args[1]}
 
 def _validate_execute_params(num, args):
     if num != len(args):
         return None
     else:
+        args[0] = args[0].encode() + b'\0'
         return {"CMD_TYPE": "EXECUTE", "EXECUTE_CMD": args[0]}
 
        

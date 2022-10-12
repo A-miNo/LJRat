@@ -20,7 +20,8 @@ def _serialize_get(data):
     serialized_data.extend(struct.pack("I", data_len))
     serialized_data.extend(struct.pack("I", cmd_type))
     serialized_data.extend(struct.pack("I", job_id))
-    serialized_data.extend(struct.pack(f"{remote_filename_len}s", data["REMOTE_FILE"].encode()))
+    serialized_data.extend(struct.pack("I", remote_filename_len))
+    serialized_data.extend(struct.pack(f"{remote_filename_len}s", data["REMOTE_FILE"]))
 
     return serialized_data
 
@@ -36,8 +37,8 @@ def _serialize_put(data):
     serialized_data.extend(struct.pack("I", data_len))
     serialized_data.extend(struct.pack("I", cmd_type))
     serialized_data.extend(struct.pack("I", job_id))
-    serialized_data.extend(struct.pack(f"{remote_filename_len}s", data["REMOTE_FILE"].encode()))
-    serialized_data.extend(struct.pack(f"{local_filename_len}s", data["LOCAL_FILE"].encode()))
+    serialized_data.extend(struct.pack(f"{remote_filename_len}s", data["REMOTE_FILE"]))
+    serialized_data.extend(struct.pack(f"{local_filename_len}s", data["LOCAL_FILE"]))
 
     return serialized_data
 
@@ -47,11 +48,11 @@ def _serialize_execute(data):
     cmd_type = cmd_lookup.get(data["CMD_TYPE"])
     job_id = data["JOB_ID"]
     execute_cmd_len = len(data["EXECUTE_CMD"])
-    data_len = HEADER_LEN + file_name_len
+    data_len = HEADER_LEN + execute_cmd_len
 
     serialized_data.extend(struct.pack("I", data_len))
     serialized_data.extend(struct.pack("I", cmd_type))
     serialized_data.extend(struct.pack("I", job_id))
-    serialized_data.extend(struct.pack(f"{execute_cmd_len}s", data["EXCUTE_CMD"].encode()))
+    serialized_data.extend(struct.pack(f"{execute_cmd_len}s", data["EXCUTE_CMD"]))
 
     return serialized_data
