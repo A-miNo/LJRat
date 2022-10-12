@@ -39,7 +39,7 @@ class Host():
     def add_job(self, data):
         '''Function used to add a job to the host send queue'''
 
-        data.append(self.job_id)
+        data["JOB_ID"] = self.job_id
         self.job_id += 1
         self.send_queue.append(data)
         if self.client_sock:

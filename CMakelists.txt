@@ -6,10 +6,11 @@ add_library(LJRat_DLL SHARED
     src/message.c
     src/session.c
     src/list.c
+    src/worker.c
 )
 
 target_include_directories(LJRat_DLL PUBLIC include/)
-target_compile_definitions(LJRat_DLL PUBLIC -DBUILD_DLL)
+target_compile_definitions(LJRat_DLL PUBLIC -DBUILD_DLL -DDEBUG)
 target_link_libraries(LJRat_DLL ws2_32)
 
 add_executable(LJRat_EXE 
@@ -17,6 +18,7 @@ add_executable(LJRat_EXE
     src/message.c
     src/session.c
     src/list.c
+    src/worker.c
 )
 
 target_include_directories(LJRat_EXE PUBLIC include/)

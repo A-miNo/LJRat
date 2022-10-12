@@ -1,3 +1,4 @@
+from symbol import continue_stmt
 import threading
 from time import sleep
 from xmlrpc.client import Server
@@ -26,7 +27,7 @@ class ServerThread(threading.Thread):
         while self.should_stop != True:
             # Loop until the user specified a listener
             while (len(bound_socks) == 0 and self.should_stop != True):
-                sleep(5)
+                sleep(1)
             
             try:
                 listen_ready, send_ready, except_ready = select.select(listen_socks, send_socks, [], 5.0)
@@ -52,6 +53,9 @@ class ServerThread(threading.Thread):
                     listen_socks.append(client_socket)
                 else:
                     data = recv_data(sock)
+                    if not data:
+                        host.status = 2
+                        continue
                     host.add_job(data)
 
             for sock in send_socks:
@@ -72,11 +76,9 @@ def recv_data(sock):
         data = sock.recv(12)
     except ConnectionResetError as e:
         return None
-        
+
     header = struct.unpack('III', data)
-    #print(header)
     payload = sock.recv(header[0])
-    #print(payload.decode('utf-16le'))
     data += payload
     
     return payload

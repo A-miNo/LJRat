@@ -10,7 +10,7 @@ ERROR_T PaylSend(PMESSAGE pMessage, SOCKET sock) {
     WSABUF buf = {0};
     
     buf.buf = pMessage->pData;
-    buf.len = pMessage->hdr.dwMessageSize;
+    buf.len = pMessage->dwMessageSize;
 
     iError = WSASend(sock, &buf, 1, &dwBytesSent, 0, NULL, NULL);
     if (E_SUCCESS != iError) {
@@ -28,8 +28,8 @@ ERROR_T MessageGenerate(DWORD dwCommandId, DWORD dwCommand, PVOID pData, DWORD d
         goto end;
     }
 
-    pMessage->hdr.dwMessageSize = MESSAGE_HEADER_LEN + dwDataLen;
-    pMessage->pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->hdr.dwMessageSize);
+    pMessage->dwMessageSize = MESSAGE_HEADER_LEN + dwDataLen;
+    pMessage->pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->dwMessageSize);
     
     PBYTE pCursor = pMessage->pData;
     
@@ -54,15 +54,15 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
     INT iError = E_SUCCESS;
     DWORD dwFlags = 0;
 
-    pMessage = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE));
+    pMessage = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, MESSAGE_HEADER_LEN);
     if (NULL == pMessage) 
     {
         iError = E_MEMORY_ERROR;
         goto end;
     }
     
-    buf.len = sizeof(MESSAGE_HEADER);
-    buf.buf = (PCHAR) &pMessage->hdr;
+    buf.len = MESSAGE_HEADER_LEN;
+    buf.buf = (PCHAR) pMessage;
 
     iError = WSARecv(sock, &buf, 1, &dwBytesReceived, &dwFlags, NULL, NULL);
 
@@ -71,10 +71,10 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
         goto end;
     }
 
-    pMessage->hdr.dwMessageSize = htonl(pMessage->hdr.dwMessageSize);
-    DBG_PRINT("Message size: %d\n", pMessage->hdr.dwMessageSize);
+    pMessage->dwMessageSize = pMessage->dwMessageSize;
+    DBG_PRINT("Message size: %d\n", pMessage->dwMessageSize);
 
-    pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->hdr.dwMessageSize);
+    pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->dwMessageSize);
     if (NULL == pData)
     {
         iError = E_MEMORY_ERROR;
@@ -82,7 +82,7 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
     }
 
     pMessage->pData = pData;
-    buf.len = pMessage->hdr.dwMessageSize;
+    buf.len = pMessage->dwMessageSize;
     buf.buf = pData;
 
     iError = WSARecv(sock, &buf, 1, &dwBytesReceived, &dwFlags, NULL, NULL);

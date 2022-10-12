@@ -54,23 +54,49 @@ class Menu(cmd.Cmd):
         args = validate_args(args, 1, _validate_get_params)
 
         if args:
-            job = ["GET", args]
-            host.add_job(job)
+            host.add_job(args)
         else:
             print("Invalid arguments")
         
     def do_put(self, arg):
         '''Upload file to target at specified path, [put local_file remote_file]'''
 
-        pass
+        if not self.current_host:
+            print("Must be interacting with target")
+            return
+        
+        host = self.current_host
+        args = _parse_args(arg)
+        args = validate_args(args, 2, _validate_put_params)
+
+        if args:
+            host.add_job(args)
+        else:
+            print("Invalid arguments")
 
     def do_execute(self, arg):
         '''Execute command on target, [execute cmd]'''
 
-        pass
+        if not self.current_host:
+            print("Must be interacting with target")
+            return
+        
+        host = self.current_host
+        args = _parse_args(arg)
+        args = validate_args(args, 1, _validate_execute_params)
+
+        if args:
+            host.add_job(args)
+        else:
+            print("Invalid arguments")
 
     def do_list_targets(self, arg):
         '''List all known targets, [list]'''
+
+        pass
+
+    def do_disconnect(self, arg):
+        '''Disconnect from target, [disconnect]'''
 
         pass
 
@@ -97,10 +123,23 @@ def _validate_listen_params(num, args):
     return ret_args
 
 def _validate_get_params(num, args):
-    ret_args = None
-
     if num != len(args):
-        return ret_args
+        return None
+    else:
+        return {"CMD_TYPE": "GET", "REMOTE_FILE": args[0]}
 
-    ret_args = args
-    return ret_args
+def _validate_put_params(num, args):
+
+    # Need to validate that the file is there and store it off
+    if num != len(args):
+        return None
+    else:
+        return {"CMD_TYPE": "PUT", "REMOTE_FILE": args[0], "LOCAL_FILE": args[1]}
+
+def _validate_execute_params(num, args):
+    if num != len(args):
+        return None
+    else:
+        return {"CMD_TYPE": "EXECUTE", "EXECUTE_CMD": args[0]}
+
+       

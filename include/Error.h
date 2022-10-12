@@ -6,7 +6,10 @@ typedef enum _error_t {
     E_FAILURE,
     E_MEMORY_ERROR,
     E_SEND_ERROR,
-    E_NULL_ARG
+    E_NULL_ARG,
+    E_JOB_REMOVE_ERROR,
+    E_THREAD_ERROR,
+    E_WINSOCK_ERROR
 
 } ERROR_T;
 

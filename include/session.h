@@ -3,10 +3,18 @@
 
 #include <Windows.h>
 #include "error.h"
+#include "list.h"
 
 typedef struct _session {
     SOCKET sock;
 } SESSION, *PSESSION;
+
+typedef struct _session_ctx {
+    int gShutdown;
+    SRW_LIST_HEAD job_list;
+    SRW_LIST_HEAD send_list;
+    HANDLE hJobWait;
+} SESSION_CTX, *PSESSION_CTX;
 
 // Function to initialize the type of session, currently only TCP is supported
 // @param pSession is a pointer to the session to be initialized

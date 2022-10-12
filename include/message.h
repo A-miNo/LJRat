@@ -6,14 +6,9 @@
 
 #define MESSAGE_HEADER_LEN 12
 
-typedef struct _MESSAGE_HEADER
+typedef struct _message
 {
     DWORD dwMessageSize;
-} MESSAGE_HEADER, *PMESSAGE_HEADER;
-
-typedef struct _payload
-{
-    MESSAGE_HEADER hdr;
     DWORD dwCommand;
     DWORD dwJobID;
     PVOID pData;
