@@ -4,20 +4,24 @@
 #include <error.h>
 #include <winsock2.h>
 
-#define MESSAGE_HEADER_LEN 12
+#define MESSAGE_HEADER_LEN 16
 
-typedef struct _message
-{
+typedef struct _message_header {
     DWORD dwMessageSize;
     DWORD dwCommand;
     DWORD dwJobID;
+    DWORD dwResultCode;
+} MESSAGE_HEADER, PMESSAGE_HEADER;
+
+typedef struct _message {
+    MESSAGE_HEADER hdr;
     PVOID pData;
 } MESSAGE, *PMESSAGE;
 
 /*
 Function that takes a buffer and a length and sends all of the data to the specified socket
 */
-ERROR_T MessageSend(PMESSAGE pkt, SOCKET sock);
+ERROR_T MessageSend(SOCKET sock, PMESSAGE pMessage);
 
 ERROR_T MessageGenerate(DWORD dwCommandId, DWORD dwCommand, PVOID pData, DWORD dwDataLen, PMESSAGE pMessage);
 

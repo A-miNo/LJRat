@@ -17,8 +17,8 @@ class WorkerThread(threading.Thread):
             self.process_data(data_tup)
     
     def recv_data(self, sock):
-        data = sock.recv(12)
-        header = struct.unpack('III', data)
+        data = sock.recv(16)
+        header = struct.unpack('IIII', data)
         print(header)
         payload = sock.recv(header[0])
         #print(payload.decode('utf-16le'))

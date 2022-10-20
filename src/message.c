@@ -3,20 +3,75 @@
 #include "debug.h"
 #include <windows.h>
 
+static ERROR_T MessageSerialize(PMESSAGE pMessage, WSABUF *pBuf);
 
-ERROR_T PaylSend(PMESSAGE pMessage, SOCKET sock) {
+ERROR_T MessageSend(SOCKET sock, PMESSAGE pMessage) {
     INT iError = E_SUCCESS;
     DWORD dwBytesSent = 0;
     WSABUF buf = {0};
     
-    buf.buf = pMessage->pData;
-    buf.len = pMessage->dwMessageSize;
+    // TODO pMessage doesnt send the entire pResult structure after work completion
+    iError = MessageSerialize(pMessage, &buf);
+    if (E_SUCCESS != iError)
+    {
+        iError = E_SEND_ERROR;
+        goto end;
+    }
 
     iError = WSASend(sock, &buf, 1, &dwBytesSent, 0, NULL, NULL);
     if (E_SUCCESS != iError) {
         iError = E_SEND_ERROR;
     }
 
+    DBG_PRINT("%d sent\n", dwBytesSent);
+
+end:
+    return iError;
+}
+
+ERROR_T MessageFree(PMESSAGE *pMsg) {
+    INT iError = E_SUCCESS;
+
+    if (NULL == *pMsg) {
+        iError = E_NULL_ARG;
+        goto end;
+    }
+
+    if (NULL != (*pMsg)->pData) {
+        HeapFree(GetProcessHeap(), 0, (*pMsg)->pData);
+    }
+
+    HeapFree(GetProcessHeap(), 0, *pMsg);
+    *pMsg = NULL;
+
+end:
+    return iError;
+
+}
+
+ERROR_T MessageSerialize(PMESSAGE pMessage, WSABUF *pBuf)
+{
+    INT iError = E_SUCCESS;
+
+    if (NULL == pMessage->pData) {
+        pBuf->buf = (PCHAR) &pMessage->hdr;
+        pBuf->len = sizeof(MESSAGE_HEADER);
+    }
+    else {
+        pBuf->buf = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->hdr.dwMessageSize);
+        if (NULL == pBuf->buf) {
+            iError = E_MEMORY_ERROR;
+            goto end;
+        }
+        else {
+            memcpy(pBuf->buf, pMessage, sizeof(MESSAGE_HEADER));
+            memcpy(pBuf->buf + sizeof(MESSAGE_HEADER), pMessage->pData, pMessage->hdr.dwMessageSize - sizeof(MESSAGE_HEADER));
+            HeapFree(GetProcessHeap(), 0, pMessage->pData);
+        }
+        pBuf->len = pMessage->hdr.dwMessageSize;
+    }
+
+end:
     return iError;
 }
 
@@ -28,8 +83,8 @@ ERROR_T MessageGenerate(DWORD dwCommandId, DWORD dwCommand, PVOID pData, DWORD d
         goto end;
     }
 
-    pMessage->dwMessageSize = MESSAGE_HEADER_LEN + dwDataLen;
-    pMessage->pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->dwMessageSize);
+    pMessage->hdr.dwMessageSize = sizeof(MESSAGE_HEADER) + dwDataLen;
+    pMessage->pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->hdr.dwMessageSize);
     
     PBYTE pCursor = pMessage->pData;
     
@@ -54,14 +109,14 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
     INT iError = E_SUCCESS;
     DWORD dwFlags = 0;
 
-    pMessage = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, MESSAGE_HEADER_LEN);
+    pMessage = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE_HEADER));
     if (NULL == pMessage) 
     {
         iError = E_MEMORY_ERROR;
         goto end;
     }
     
-    buf.len = MESSAGE_HEADER_LEN;
+    buf.len = sizeof(MESSAGE_HEADER);
     buf.buf = (PCHAR) pMessage;
 
     iError = WSARecv(sock, &buf, 1, &dwBytesReceived, &dwFlags, NULL, NULL);
@@ -71,10 +126,9 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
         goto end;
     }
 
-    pMessage->dwMessageSize = pMessage->dwMessageSize;
-    DBG_PRINT("Message size: %d\n", pMessage->dwMessageSize);
+    DBG_PRINT("Message size: %d\n", pMessage->hdr.dwMessageSize);
 
-    pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->dwMessageSize);
+    pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->hdr.dwMessageSize - sizeof(MESSAGE_HEADER));
     if (NULL == pData)
     {
         iError = E_MEMORY_ERROR;
@@ -82,7 +136,7 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
     }
 
     pMessage->pData = pData;
-    buf.len = pMessage->dwMessageSize;
+    buf.len = pMessage->hdr.dwMessageSize - MESSAGE_HEADER_LEN;
     buf.buf = pData;
 
     iError = WSARecv(sock, &buf, 1, &dwBytesReceived, &dwFlags, NULL, NULL);

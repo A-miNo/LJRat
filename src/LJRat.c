@@ -65,7 +65,6 @@ EXPORT_FUNC ERROR_T Run(VOID)
     DWORD dwPort = 0;
     INT iSelectRet = 0;
     SOCKADDR_IN addr = {0};
-    SESSION session = {0};
     fd_set read_fds = {0};
     TIMEVAL timeout = {0};
     PMESSAGE pMsg = NULL;
@@ -115,11 +114,13 @@ EXPORT_FUNC ERROR_T Run(VOID)
     {
         goto end;
     }
-    iError = SessionInit(&session, AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    iError = SessionInit(&session_ctx, AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (E_SUCCESS != iError) {
         goto end;
     }
-    iError = SessionConnect(&session, &addr);
+
+    // TODO implement retry behavior
+    iError = SessionConnect(&session_ctx, &addr);
 
     // Set Select timeout to 1 second so we can check for shutdown condition.
     timeout.tv_sec = 1;
@@ -127,7 +128,7 @@ EXPORT_FUNC ERROR_T Run(VOID)
     while (SHUTDOWN_INITIATED != session_ctx.gShutdown)
         {
             FD_ZERO(&read_fds);
-            FD_SET(session.sock, &read_fds);
+            FD_SET(session_ctx.sock, &read_fds);
             iError = select(0, &read_fds, NULL, NULL, &timeout);
 
             switch (iError) {
@@ -135,7 +136,7 @@ EXPORT_FUNC ERROR_T Run(VOID)
                     DBG_PRINT("Timeout\n");
                     break;
                 case 1:
-                    iError = MessageReceive(session.sock, &pMsg);
+                    iError = MessageReceive(session_ctx.sock, &pMsg);
                     if (ERROR_SUCCESS != iError) {
                         DBG_PRINT("Error reading msg\n");
                         break;

@@ -100,6 +100,9 @@ class Menu(cmd.Cmd):
 
         pass
 
+    def emptyline(self):
+        '''Function to override lastcmd being executed on blank return'''
+        pass
 
 def validate_args(args, num, validate_func):
     return validate_func(num, args)

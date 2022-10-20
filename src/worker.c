@@ -40,6 +40,8 @@ unsigned int __stdcall WorkerThread(PVOID pArg)
         }
 
         ProcessWork((PMESSAGE) pItem->pData);
+        HeapFree(GetProcessHeap(), 0, pItem);
+        DBG_PRINT("Processed work item\n");
     } 
 
 end:
@@ -51,9 +53,9 @@ ERROR_T ProcessWork(PMESSAGE pMsg)
     INT iError = E_SUCCESS;
     PMESSAGE pResult = NULL;
 
-    DBG_PRINT("Len: %d CMD_TYPE: %d JOB_ID: %d\n", pMsg->dwMessageSize, pMsg->dwCommand, pMsg->dwJobID);
+    DBG_PRINT("Len: %d CMD_TYPE: %d JOB_ID: %d\n", pMsg->hdr.dwMessageSize, pMsg->hdr.dwCommand, pMsg->hdr.dwJobID);
 
-    switch(pMsg->dwCommand) {
+    switch(pMsg->hdr.dwCommand) {
         case GET:
             iError = GetCmd(pMsg, &pResult);
             break;
@@ -68,6 +70,19 @@ ERROR_T ProcessWork(PMESSAGE pMsg)
             break;
     }
 
+    // TODO Do something when a critical error happens
+
+    if (E_SUCCESS != iError) {
+        DBG_PRINT("Error processing work %d\n", iError);
+    }
+
+    iError = MessageSend(session_ctx.sock, pResult);
+    if (E_SUCCESS != iError) {
+        DBG_PRINT("Error sending results\n");
+    }
+
+end:
+    MessageFree(&pMsg);    
     return iError;
 }
 
@@ -93,6 +108,7 @@ ERROR_T GetCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
 
     hFile = CreateFileA(pRemoteFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (INVALID_HANDLE_VALUE == hFile) {
+        printf("%d\n", GetLastError());
         iError = E_GET_READ_ERROR;
         goto end;
     }
@@ -119,12 +135,21 @@ ERROR_T GetCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
         goto end;
     }
 
-    (*pResult)->dwCommand = RESULT_CMD_ID;
-    (*pResult)->dwJobID = pMsg->dwJobID;
-    (*pResult)->dwMessageSize = MESSAGE_HEADER_LEN + dwBytesRead;
-    (*pResult)->pData = pFileBuf;
-
 end:
+    if (INVALID_HANDLE_VALUE != hFile) {
+        CloseHandle(hFile);
+    }
+
+    (*pResult)->hdr.dwCommand = RESULT_CMD_ID;
+    (*pResult)->hdr.dwJobID = pMsg->hdr.dwJobID;
+    (*pResult)->hdr.dwMessageSize = sizeof(MESSAGE_HEADER);
+    (*pResult)->hdr.dwResultCode = iError;
+
+    if (E_SUCCESS == iError) {
+        (*pResult)->hdr.dwMessageSize += dwBytesRead;
+        (*pResult)->pData = pFileBuf;
+    }
+
     return iError;
 }
 

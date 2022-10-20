@@ -4,7 +4,7 @@
 #include "error.h"
 #include "debug.h"
 
-ERROR_T SessionInit(PSESSION pSession, INT af, INT type, INT protocol) {
+ERROR_T SessionInit(PSESSION_CTX pSession, INT af, INT type, INT protocol) {
     INT iError = E_SUCCESS;
     if (NULL == pSession) {
         goto end;
@@ -22,7 +22,7 @@ return iError;
 }
 
 
-ERROR_T SessionConnect(PSESSION pSession, SOCKADDR_IN *addr){
+ERROR_T SessionConnect(PSESSION_CTX pSession, SOCKADDR_IN *addr) {
     INT iError = E_SUCCESS;
 
     iError = WSAConnect(pSession->sock, (const SOCKADDR *)addr, sizeof(*addr), NULL, NULL, NULL, NULL);

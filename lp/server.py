@@ -11,6 +11,7 @@ import queue
 import struct
 from globals import *
 from serialize import serialize
+from deserialize import process_result
 
 class ServerThread(threading.Thread):
     
@@ -54,9 +55,9 @@ class ServerThread(threading.Thread):
                 else:
                     data = recv_data(sock)
                     if not data:
-                        host.status = 2
+                        host.status = DISCONNECTED
                         continue
-                    host.add_job(data)
+                    #process_result(data)
 
             for sock in send_socks:
                 alias = host_list.get_alias(sock)
@@ -73,15 +74,15 @@ class ServerThread(threading.Thread):
 
 def recv_data(sock):
     try:
-        data = sock.recv(12)
+        data = sock.recv(16)
     except ConnectionResetError as e:
         return None
 
-    header = struct.unpack('III', data)
-    payload = sock.recv(header[0])
+    header = struct.unpack('IIII', data)
+    payload = sock.recv(header[0] - HEADER_LEN)
     data += payload
     
-    return payload
+    return data
 
 def send_data(sock, data):
     return sock.send(data)
