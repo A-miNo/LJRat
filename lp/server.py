@@ -27,7 +27,8 @@ class ServerThread(threading.Thread):
 
         while self.should_stop != True:
             # Loop until the user specified a listener
-            while (len(bound_socks) == 0 and self.should_stop != True):
+
+            while (len(bound_socks) == 0 and len(listen_socks) == 0 and self.should_stop != True):
                 sleep(1)
             
             try:
@@ -41,25 +42,31 @@ class ServerThread(threading.Thread):
             for sock in listen_ready:
                 alias = host_list.get_alias(sock)
                 host = host_list.hosts[alias]
-
+                
                 # If socket has data waiting and is one of the bound sockets, accept connection
                 if sock in bound_socks:
                     (client_socket, host_info) = sock.accept()
                     #print(f"Connection from {host_info}")
 
                     host_list.hosts[alias].client_sock = client_socket
-                    host_list.hosts[alias].status = 1
+                    host_list.hosts[alias].status = CONNECTED
 
                     # Add our new client socket to select lists to watch for data
                     listen_socks.append(client_socket)
+
+                    # Stop listening on bound socket, should only need to catch one callback
+                    sock.close()
+                    bound_socks.remove(sock)
+                    listen_socks.remove(sock)
                 else:
                     data = recv_data(sock)
                     if not data:
                         host.status = DISCONNECTED
-                        continue
-                    #process_result(data)
+                    else:
+                        process_result(data)
+                    listen_socks.remove(sock)
 
-            for sock in send_socks:
+            for sock in send_ready:
                 alias = host_list.get_alias(sock)
                 host = host_list.hosts[alias]
 
@@ -69,7 +76,7 @@ class ServerThread(threading.Thread):
                     data = serialize(job)
                     send_data(host.client_sock, data)
 
-                send_socks.remove(host.client_sock)
+                send_socks.remove(sock)
 
 
 def recv_data(sock):

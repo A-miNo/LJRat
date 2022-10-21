@@ -6,8 +6,6 @@
 #include "debug.h"
 #include "session.h"
 
-#define RESULT_CMD_ID 99
-
 extern SESSION_CTX session_ctx;
 
 enum CMD_TYPE {
@@ -140,7 +138,7 @@ end:
         CloseHandle(hFile);
     }
 
-    (*pResult)->hdr.dwCommand = RESULT_CMD_ID;
+    (*pResult)->hdr.dwCommand = pMsg->hdr.dwCommand;
     (*pResult)->hdr.dwJobID = pMsg->hdr.dwJobID;
     (*pResult)->hdr.dwMessageSize = sizeof(MESSAGE_HEADER);
     (*pResult)->hdr.dwResultCode = iError;

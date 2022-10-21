@@ -8,3 +8,4 @@ send_socks = []
 HEADER_LEN = 16
 INT_SIZE = 4
 DISCONNECTED = 2
+CONNECTED = 1

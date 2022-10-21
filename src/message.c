@@ -10,7 +10,6 @@ ERROR_T MessageSend(SOCKET sock, PMESSAGE pMessage) {
     DWORD dwBytesSent = 0;
     WSABUF buf = {0};
     
-    // TODO pMessage doesnt send the entire pResult structure after work completion
     iError = MessageSerialize(pMessage, &buf);
     if (E_SUCCESS != iError)
     {

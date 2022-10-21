@@ -1,6 +1,7 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+// TOOD implement logic that separates critical errors from informational
 typedef enum _error_t {
     E_SUCCESS = 0,
     E_FAILURE,
