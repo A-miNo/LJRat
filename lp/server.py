@@ -1,9 +1,7 @@
-from symbol import continue_stmt
 import threading
 from time import sleep
 from xmlrpc.client import Server
-import log
-import worker
+import logging
 import os
 import socket
 import select
@@ -18,15 +16,19 @@ class ServerThread(threading.Thread):
     def __init__(self, logging_dir):
         super().__init__(target=self.server_handler)
         self.should_stop = False
-        self.log_name = os.path.join(logging_dir, "server")
-        os.makedirs(self.log_name, exist_ok=True)
-        self.log = log.Log(self.log_name)
+        self.logging_dir = logging_dir
+        os.makedirs(self.logging_dir, exist_ok=True)
+        self.log = logging.getLogger("server_log")
+        file_handler = logging.FileHandler(self.logging_dir + "\\server.log")
+        formatter = logging.Formatter(fmt='%(asctime)-4s %(message)s',
+                                  datefmt='%Y-%m-%d %H:%M:%S')
+        file_handler.setFormatter(formatter)
+        self.log.setLevel(logging.INFO)
+        self.log.addHandler(file_handler)
 
     def server_handler(self):
-        # Wait for the user to tell us to listen
-
         while self.should_stop != True:
-            # Loop until the user specified a listener
+            # Loop until the user specified\s a listener
 
             while (len(bound_socks) == 0 and len(listen_socks) == 0 and self.should_stop != True):
                 sleep(1)
@@ -46,6 +48,7 @@ class ServerThread(threading.Thread):
                 # If socket has data waiting and is one of the bound sockets, accept connection
                 if sock in bound_socks:
                     (client_socket, host_info) = sock.accept()
+                    self.log.info("Connected accepted: %s:%s", host_info[0], host_info[1])
                     #print(f"Connection from {host_info}")
 
                     host_list.hosts[alias].client_sock = client_socket
@@ -63,7 +66,7 @@ class ServerThread(threading.Thread):
                     if not data:
                         host.status = DISCONNECTED
                     else:
-                        process_result(data)
+                        process_result(self.logging_dir, data)
                     listen_socks.remove(sock)
 
             for sock in send_ready:

@@ -3,7 +3,6 @@ import socket
 import threading
 import time
 import sys
-from worker import WorkerThread
 import commands
 from server import ServerThread
 import menu
@@ -14,6 +13,7 @@ def main():
     args = parser.parse_args()
 
     server_thread = ServerThread(args.logging_dir)
+    server_obj = server_thread
     server_thread.start()
 
     menu_loop = menu.Menu()

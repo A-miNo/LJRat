@@ -56,3 +56,4 @@ dkms.conf
 build
 *__pycache__*
 *.vscode
+logs/
