@@ -1,8 +1,5 @@
 import struct
-from globals import HEADER_LEN, INT_SIZE
-
-
-cmd_lookup = {"GET": 1, "PUT": 2, "EXECUTE": 3}
+from globals import *
 
 def serialize(data):
     serialize_funcs = {"GET": _serialize_get, "PUT": _serialize_put, "EXECUTE": _serialize_execute}

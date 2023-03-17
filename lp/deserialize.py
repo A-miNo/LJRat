@@ -13,7 +13,7 @@ def process_result(log_dir, data):
     payload = data[HEADER_LEN:]
     message_size, cmd_id, job_id, result_code = struct.unpack('IIII', header)
 
-    if cmd_id == 1:
+    if cmd_id == 0:
         process_get(log_dir, payload)
     
     print(f"size: {message_size}, cmd_id: {cmd_id}, job_id: {job_id}, result_code: {result_code}")

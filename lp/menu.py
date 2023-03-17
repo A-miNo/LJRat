@@ -12,7 +12,7 @@ class Menu(cmd.Cmd):
         '''Listen for an incoming connection, [listen ip port alias]'''
 
         args = _parse_args(arg)
-        args = validate_args(args, 3, _validate_listen_params)
+        args = _validate_listen(args)
 
         if args:
             commands.add_listen_socket(args[0], args[1], args[2])
@@ -51,7 +51,7 @@ class Menu(cmd.Cmd):
         
         host = self.current_host
         args = _parse_args(arg)
-        args = validate_args(args, 1, _validate_get_params)
+        args = _validate_get(args)
 
         if args:
             host.add_job(args)
@@ -67,7 +67,7 @@ class Menu(cmd.Cmd):
         
         host = self.current_host
         args = _parse_args(arg)
-        args = validate_args(args, 2, _validate_put_params)
+        args = _validate_put(args)
 
         if args:
             host.add_job(args)
@@ -83,7 +83,7 @@ class Menu(cmd.Cmd):
         
         host = self.current_host
         args = _parse_args(arg)
-        args = validate_args(args, 1, _validate_execute_params)
+        args = _validate_execute(args)
 
         if args:
             host.add_job(args)
@@ -104,16 +104,13 @@ class Menu(cmd.Cmd):
         '''Function to override lastcmd being executed on blank return'''
         pass
 
-def validate_args(args, num, validate_func):
-    return validate_func(num, args)
-
 def _parse_args(arg):
     return arg.split()
 
-def _validate_listen_params(num, args):
+def _validate_listen(args):
     ret_args = None
 
-    if num != len(args):
+    if len(args) != 3:
         return ret_args
 
     try:
@@ -125,25 +122,24 @@ def _validate_listen_params(num, args):
     ret_args = args
     return ret_args
 
-def _validate_get_params(num, args):
-    if num != len(args):
+def _validate_get(args):
+    if len(args) != 1:
         return None
     else:
         args[0] = args[0].encode() + b'\0'
         return {"CMD_TYPE": "GET", "REMOTE_FILE": args[0]}
 
-def _validate_put_params(num, args):
-
+def _validate_put(args):
     # Need to validate that the file is there and store it off
-    if num != len(args):
+    if len(args) != 2:
         return None
     else:
         args[0] = args[0].encode() + b'\0'
         args[1] = args[1].encode() + b'\0'
         return {"CMD_TYPE": "PUT", "REMOTE_FILE": args[0], "LOCAL_FILE": args[1]}
 
-def _validate_execute_params(num, args):
-    if num != len(args):
+def _validate_execute(args):
+    if len(args) != 1:
         return None
     else:
         args[0] = args[0].encode() + b'\0'
