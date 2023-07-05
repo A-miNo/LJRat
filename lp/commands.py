@@ -18,7 +18,7 @@ def add_listen_socket(ip, port, alias_name):
 
     sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
     sock.bind((ip, port))
-    sock.listen(5)
+    sock.listen(0)
 
     host_list.add_host(ip, sock, alias_name)
     listen_socks.append(sock)

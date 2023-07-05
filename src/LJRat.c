@@ -3,8 +3,8 @@
 #include <winsock2.h>
 #include <Windows.h>
 #include <process.h>
-#include "error.h"
 #include "LJRat.h"
+#include "Error.h"
 #include "session.h"
 #include "debug.h"
 #include "message.h"
@@ -133,12 +133,12 @@ EXPORT_FUNC ERROR_T Run(VOID)
 
             switch (iError) {
                 case 0:
-                    DBG_PRINT("Timeout\n");
+                    //DBG_PRINT("Timeout\n");
                     break;
                 case 1:
                     iError = MessageReceive(session_ctx.sock, &pMsg);
                     if (ERROR_SUCCESS != iError) {
-                        DBG_PRINT("Error reading msg\n");
+                        //DBG_PRINT("Error reading msg\n");
                         break;
                     }
 
