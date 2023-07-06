@@ -8,8 +8,8 @@
 
 typedef struct _message_header {
     DWORD dwMessageSize;
-    DWORD dwCommand;
     DWORD dwJobID;
+    DWORD dwCommand;
     DWORD dwResultCode;
 } MESSAGE_HEADER, PMESSAGE_HEADER;
 

@@ -21,6 +21,7 @@ def main():
     cmd_menu = menu.Menu()
     for module in mod_funcs:
         setattr(type(cmd_menu), 'do_' + module, globals()[module].entrypoint)
+        ctx.deserializers[globals()[module].MODULE_ID] = globals()[module]._deserialize
 
     print(f"Waitng for connection on {args.ip}:{args.port}")
     listen_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
@@ -28,7 +29,12 @@ def main():
     listen_sock.listen(5)
 
     # Accept connection and pass off to worker thread
-    conn = listen_sock.accept()
+    try:
+        conn = listen_sock.accept()
+
+    except KeyboardInterrupt as e:
+        sys.exit(-1)
+
 
     # Should only be expecting one callback
     listen_sock.close()

@@ -9,7 +9,7 @@
 extern SESSION_CTX session_ctx;
 
 enum CMD_TYPE {
-    GET = 0,
+    GET = 0x01,
     PUT,
     EXECUTE
 };

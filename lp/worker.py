@@ -1,5 +1,6 @@
 import threading
-import network
+import session
+from globals import ctx
 
 class Worker(threading.Thread):
     def __init__(self, conn):
@@ -9,8 +10,11 @@ class Worker(threading.Thread):
 
     def Worker(self):
         while not self.stop:
+            # Lets get one message at a time
             try:
-                data = network.recv_data(self.conn)
+                data = session.recv_data(self.conn)
             except ConnectionError as e:
                 print(e)
                 self.stop = True
+
+            # Find the appropriate deserializer and process the message

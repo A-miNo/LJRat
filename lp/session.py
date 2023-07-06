@@ -12,7 +12,7 @@ INT_SIZE = 4
 
 def recv_data(sock):
     try:
-        data = sock.recv(16)
+        data = sock.recv(HEADER_LEN)
     except ConnectionResetError as e:
         return None
 

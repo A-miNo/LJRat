@@ -1,7 +1,7 @@
 import struct
 from helper import str_to_c_str
 from globals import ctx
-from network import HEADER_LEN, INT_SIZE
+from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x01
 
@@ -10,9 +10,7 @@ def entrypoint(self, args):
     'get remote_file.exe'
     """
 
-    print(args)
     module_args = {"REMOTE_FILE": args, "JOB_ID": ctx.get_next_job()}
-    print(module_args)
     return _serialize(module_args)
 
 
@@ -36,4 +34,10 @@ def _serialize(data):
     return serialized_data
 
 def _deserialize(data):
+    # TODO
+    # Check result code
+    # Process message
+    # Log results
+    # Idea
+    # Add functionality to post command to wait for job-id results to come back
     pass

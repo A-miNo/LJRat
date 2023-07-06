@@ -10,6 +10,7 @@ class Rat_Ctx():
         self.recv_queue = queue.Queue()
         self.lock = threading.Lock()
         self.loaded_modules = []
+        self.deserializers = {}
     
     def get_next_job(self):
         '''Threadsafe way of getting a new job-id'''
