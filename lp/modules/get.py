@@ -1,4 +1,5 @@
 import struct
+import message
 from helper import str_to_c_str
 from globals import ctx
 from session import HEADER_LEN, INT_SIZE
@@ -11,7 +12,9 @@ def entrypoint(self, args):
     """
 
     module_args = {"REMOTE_FILE": args, "JOB_ID": ctx.get_next_job()}
-    return _serialize(module_args)
+    msg = message.Message(_serialize(module_args))
+    ctx.send_queue.put(msg)
+    return False
 
 
 def _serialize(data):

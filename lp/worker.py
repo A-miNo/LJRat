@@ -1,8 +1,9 @@
 import threading
 import session
+import message
 from globals import ctx
 
-class Worker(threading.Thread):
+class Recv_Worker(threading.Thread):
     def __init__(self, conn):
         super().__init__(target=self.Worker)
         self.conn = conn
@@ -17,4 +18,19 @@ class Worker(threading.Thread):
                 print(e)
                 self.stop = True
 
+            msg = message.Message(data)
+            msg.deserializer = ctx.deserializers[msg.module_id]
+            print(msg)
             # Find the appropriate deserializer and process the message
+
+
+class Send_Worker(threading.Thread):
+    def __init__(self, conn):
+        super().__init__(target=self.Worker)
+        self.stop = False
+        self.conn = conn
+
+    def Worker(self):
+        while ctx.send_queue:
+            msg = ctx.send_queue.get()
+            session.send_data(self.conn, msg.data)
