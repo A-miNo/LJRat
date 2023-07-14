@@ -3,6 +3,7 @@ import socket
 import worker
 import menu
 import sys
+import select
 from modules import *
 from modules import mod_funcs
 from globals import ctx
@@ -28,35 +29,40 @@ def main():
     listen_sock.bind((args.ip, args.port))
     listen_sock.listen(5)
 
-    # Accept connection and pass off to worker thread
-    try:
-        conn = listen_sock.accept()
+    inputs = [listen_sock]
+    outputs = []
+    errors = []
 
-    except KeyboardInterrupt as e:
-        sys.exit(-1)
+    while inputs:
+        try:
+            read, _, _ = select.select(inputs, outputs, errors, 1)
+        except KeyboardInterrupt as e:
+            sys.exit(-1)
 
+        for s in read:
+            conn = s.accept()
+            read.remove(s)
+            inputs.remove(listen_sock)
+            listen_sock.close()
 
     # Should only be expecting one callback
     listen_sock.close()
-    
-    worker_thread = worker.Worker(conn[0])
-    worker_thread.start()
 
-    cmd_menu.postcmd = process_command
+    # Start up the worker threads
+    recv_thread = worker.Recv_Worker(conn[0])
+    recv_thread.daemon = True
+    recv_thread.start()
+    send_thread = worker.Send_Worker(conn[0])
+    send_thread.daemon = True
+    send_thread.start()
 
     try:
         cmd_menu.cmdloop()
 
     except KeyboardInterrupt as e:
-        worker_thread.stop = True
+        recv_thread.stop = True
+        send_thread.stop = True
         sys.exit(-1)
-    
-def process_command(stop, data):
-    ''' Function to add commands to send queue after issuance'''
-
-    print("Processing command")
-    ctx.send_queue.put(data)
-    return stop
 
 if __name__ == '__main__':
     main()
