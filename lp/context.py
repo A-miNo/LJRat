@@ -11,6 +11,7 @@ class Rat_Ctx():
         self.lock = threading.Lock()
         self.loaded_modules = []
         self.deserializers = {}
+        self.log_dir = "logs"
     
     def get_next_job(self):
         '''Threadsafe way of getting a new job-id'''

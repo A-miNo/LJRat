@@ -24,6 +24,8 @@ def main():
         setattr(type(cmd_menu), 'do_' + module, globals()[module].entrypoint)
         ctx.deserializers[globals()[module].MODULE_ID] = globals()[module]._deserialize
 
+    ctx.log_dir = args.log
+
     print(f"Waitng for connection on {args.ip}:{args.port}")
     listen_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
     listen_sock.bind((args.ip, args.port))
