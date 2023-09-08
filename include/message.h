@@ -11,7 +11,7 @@ typedef struct _message_header {
     DWORD dwJobID;
     DWORD dwCommand;
     DWORD dwResultCode;
-} MESSAGE_HEADER, PMESSAGE_HEADER;
+} MESSAGE_HEADER, *PMESSAGE_HEADER;
 
 typedef struct _message {
     MESSAGE_HEADER hdr;

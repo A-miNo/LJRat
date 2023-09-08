@@ -17,8 +17,10 @@ def recv_data(sock):
         return None
 
     header = struct.unpack('IIII', data)
-    payload = sock.recv(header[0] - HEADER_LEN)
-    data += payload
+    
+    if (header[0] > HEADER_LEN):
+        payload = sock.recv(header[0] - HEADER_LEN)
+        data += payload
     
     return data
 

@@ -19,8 +19,10 @@ class Recv_Worker(threading.Thread):
                 self.stop = True
 
             msg = message.Message(data)
-            msg.deserializer = ctx.deserializers[msg.module_id]
-            print(msg)
+            deserializer = ctx.deserializers[msg.module_id]
+
+            deserializer(msg)
+            #print(msg)
             # Find the appropriate deserializer and process the message
 
 
