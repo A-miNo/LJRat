@@ -10,14 +10,11 @@ extern SESSION_CTX session_ctx;
 
 enum CMD_TYPE {
     GET = 0x01,
+    EXECUTE,
     PUT,
-    EXECUTE
 };
 
 static ERROR_T ProcessWork(PMESSAGE pMsg);
-static ERROR_T GetCmd(PMESSAGE pMsg, PMESSAGE *pResult);
-static ERROR_T PutCmd(PMESSAGE pMsg, PMESSAGE *pResult);
-static ERROR_T ExecuteCmd(PMESSAGE pMsg, PMESSAGE *pResult);
 
 unsigned int __stdcall WorkerThread(PVOID pArg)
 {
@@ -84,95 +81,7 @@ end:
     return iError;
 }
 
-ERROR_T GetCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
-    INT iError = E_SUCCESS;
-    PDWORD pRemoteFileLen = NULL;
-    PCHAR pRemoteFile = NULL;
-    PBYTE pFileBuf = NULL;
-    HANDLE hFile = INVALID_HANDLE_VALUE;
 
-    *pResult = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE));
-    if (NULL == pResult) {
-        iError = E_MEMORY_ERROR;
-        goto end;
-    }
 
-    pRemoteFileLen = (PDWORD) pMsg->pData;
-    pRemoteFile = (PCHAR) ((PBYTE) pMsg->pData + sizeof(DWORD));
 
-    DBG_PRINT("Getting: %s:%d\n", pRemoteFile, *pRemoteFileLen);
 
-    LARGE_INTEGER liFileSize = {0};
-
-    hFile = CreateFileA(pRemoteFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (INVALID_HANDLE_VALUE == hFile) {
-        printf("%d\n", GetLastError());
-        iError = E_GET_READ_ERROR;
-        goto end;
-    }
-
-    if (0 == GetFileSizeEx(hFile, &liFileSize)) {
-        iError = E_GET_SIZE_ERROR;
-        goto end;
-    }
-
-    if (liFileSize.HighPart > 0) {
-        iError = E_GET_SIZE_LARGE;
-        goto end;
-    }
-
-    DWORD dwBytesRead = 0;
-    pFileBuf = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, liFileSize.LowPart);
-    if (NULL == pFileBuf) {
-        iError = E_MEMORY_ERROR;
-        goto end;
-    }
-
-    if (0 == ReadFile(hFile, pFileBuf, liFileSize.LowPart, &dwBytesRead, NULL)) {
-        iError = E_GET_READ_ERROR;
-        goto end;
-    }
-
-end:
-    if (INVALID_HANDLE_VALUE != hFile) {
-        CloseHandle(hFile);
-    }
-
-    (*pResult)->hdr.dwCommand = pMsg->hdr.dwCommand;
-    (*pResult)->hdr.dwJobID = pMsg->hdr.dwJobID;
-    (*pResult)->hdr.dwMessageSize = sizeof(MESSAGE_HEADER);
-    (*pResult)->hdr.dwResultCode = iError;
-
-    if (E_SUCCESS == iError) {
-        (*pResult)->hdr.dwMessageSize += dwBytesRead;
-        (*pResult)->pData = pFileBuf;
-    }
-
-    return iError;
-}
-
-ERROR_T PutCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
-    INT iError = E_SUCCESS;
-
-    *pResult = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE));
-    if (NULL == pResult) {
-        iError = E_MEMORY_ERROR;
-        goto end;
-    }
-
-end:
-    return iError;
-}
-
-ERROR_T ExecuteCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
-    INT iError = E_SUCCESS;
-
-    *pResult = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE));
-    if (NULL == pResult) {
-        iError = E_MEMORY_ERROR;
-        goto end;
-    }
-
-end:
-    return iError;
-}

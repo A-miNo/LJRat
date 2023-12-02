@@ -2,6 +2,7 @@ import struct
 import message
 import os
 import log
+from error import *
 from helper import str_to_c_str, get_timestamp_str
 from globals import ctx
 from session import HEADER_LEN, INT_SIZE
@@ -16,7 +17,7 @@ def entrypoint(self, args):
     module_args = {"REMOTE_FILE": args, "JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
     ctx.send_queue.put(msg)
-    return False
+    return (msg, E_SUCCESS)
 
 
 def _serialize(data):
@@ -27,7 +28,7 @@ def _serialize(data):
     job_id = data["JOB_ID"]
     remote_file = str_to_c_str(data["REMOTE_FILE"])
     remote_filename_len = len(remote_file)
-    data_len = HEADER_LEN + remote_filename_len + INT_SIZE
+    data_len = HEADER_LEN + INT_SIZE + remote_filename_len
 
     serialized_data.extend(struct.pack("I", data_len))
     serialized_data.extend(struct.pack("I", job_id))
@@ -39,14 +40,11 @@ def _serialize(data):
     return serialized_data
 
 def _deserialize(msg):
-    # TODO
-    # Add functionality to post command to wait for job-id results to come back
-
     log_dir = ctx.log_dir + os.sep + "downloads"
 
-    if msg.result_code == 0:
-        log.write_to_log(log_dir, ".download", msg.payload)
+    if msg.result_code == E_SUCCESS:
+        log.write_to_log(log_dir, ".download", msg.payload, "File successfully downloaded to: ")
     else:
-        print("Error getting file")
+        print(f"Error downloading file: {ERROR_TABLE[msg.result_code]}")
 
-    pass
+    return

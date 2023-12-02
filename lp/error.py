@@ -1,0 +1,14 @@
+E_SUCCESS = 0x0000
+E_FAILURE = 0x0001
+E_FILE_EXISTS_ERROR = 0x1000
+E_GET_ERROR = 0x1001
+E_PUT_ERROR = 0x1002
+
+ERROR_TABLE = {
+    0x0000: "Command was executed successfully",
+    0x0001: "Error failure",
+    0x1000: "Error file exists error",
+    0x1001: "Error getting file",
+    0x1002: "Error putting file"
+    
+}

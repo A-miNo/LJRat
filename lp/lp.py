@@ -21,6 +21,7 @@ def main():
 
     cmd_menu = menu.Menu()
     for module in mod_funcs:
+        print(f"Loading {module}")
         setattr(type(cmd_menu), 'do_' + module, globals()[module].entrypoint)
         ctx.deserializers[globals()[module].MODULE_ID] = globals()[module]._deserialize
 

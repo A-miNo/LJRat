@@ -8,10 +8,12 @@ class Rat_Ctx():
         self.job_id = 0
         self.send_queue = queue.Queue()
         self.recv_queue = queue.Queue()
+        self.processed = []
         self.lock = threading.Lock()
         self.loaded_modules = []
         self.deserializers = {}
         self.log_dir = "logs"
+        self.wait_cmd = None
     
     def get_next_job(self):
         '''Threadsafe way of getting a new job-id'''
