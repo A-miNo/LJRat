@@ -12,6 +12,7 @@ enum CMD_TYPE {
     GET = 0x01,
     EXECUTE,
     PUT,
+    DIR
 };
 
 static ERROR_T ProcessWork(PMESSAGE pMsg);
@@ -59,6 +60,9 @@ ERROR_T ProcessWork(PMESSAGE pMsg)
             break;
         case EXECUTE:
             iError = ExecuteCmd(pMsg, &pResult);
+            break;
+        case DIR:
+            iError = DirCmd(pMsg, &pResult);
             break;
 
         default:

@@ -7,7 +7,8 @@ typedef enum _error_t {
     E_FAILURE = 0x0001,
     E_FILE_EXISTS_ERROR = 0x1000,
     E_GET_ERROR = 0x1001,
-    E_PUT_ERROR = 0x1002
+    E_PUT_ERROR = 0x1002,
+    E_DIR_ERROR = 0x1003
 
 } ERROR_T;
 

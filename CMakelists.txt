@@ -10,6 +10,7 @@ add_library(LJRat_DLL SHARED
     src/commands/get.c
     src/commands/put.c
     src/commands/execute.c
+    src/commands/dir.c
 )
 
 target_include_directories(LJRat_DLL PUBLIC include/)
@@ -25,6 +26,7 @@ add_executable(LJRat_EXE
     src/commands/get.c
     src/commands/put.c
     src/commands/execute.c
+    src/commands/dir.c
 )
 
 target_include_directories(LJRat_EXE PUBLIC include/)

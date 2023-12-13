@@ -108,7 +108,7 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
     INT iError = E_SUCCESS;
     DWORD dwFlags = 0;
 
-    pMessage = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE_HEADER));
+    pMessage = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE));
     if (NULL == pMessage) 
     {
         iError = E_MEMORY_ERROR;

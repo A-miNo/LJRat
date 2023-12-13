@@ -2,7 +2,7 @@
 #include "message.h"
 #include "debug.h"
 #include <windows.h>
-
+// TODO: Add logic to check for command failure vs fatal failure (memory)
 ERROR_T GetCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
     INT iError = E_SUCCESS;
     PDWORD pRemoteFileNameLen = NULL;
