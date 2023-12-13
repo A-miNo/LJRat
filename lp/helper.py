@@ -1,4 +1,4 @@
-import datetime  
+from datetime import datetime
 
 def get_timestamp_str():
     current_time = datetime.datetime.now()
@@ -9,3 +9,18 @@ def get_timestamp_str():
 
 def str_to_c_str(str_to_be_conv):
     return (str_to_be_conv.encode() + b'\x00')
+
+def filetime_to_dt(filetime):
+    dt = datetime.utcfromtimestamp(WindowsTickToUnixSeconds(filetime))
+    return dt.strftime("%m/%d/%Y %H:%M %p")
+
+def WindowsTickToUnixSeconds(windowsTicks):
+    WINDOWS_TICK_INTERVAL  = 100e-9 # 100 nanoseconds intervals
+    SEC_TO_UNIX_EPOCH = (datetime(1970, 1, 1) - datetime(1601, 1, 1)).total_seconds()
+    return windowsTicks * WINDOWS_TICK_INTERVAL - SEC_TO_UNIX_EPOCH
+
+def sizeof_fmt(num):
+    for unit in ("", "KB", "MB", "GB", "TB"):
+        if abs(num) < 1024.0:
+            return f"{num:3.1f}{unit}"
+        num /= 1024.0

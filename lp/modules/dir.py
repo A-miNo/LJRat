@@ -3,7 +3,7 @@ import message
 import os
 import log
 from error import *
-from helper import str_to_c_str, get_timestamp_str
+from helper import str_to_c_str, get_timestamp_str, filetime_to_dt, sizeof_fmt
 from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
@@ -61,20 +61,18 @@ def _deserialize(msg):
     log_dir = ctx.log_dir + os.sep
 
     if msg.result_code == E_SUCCESS:
-        file_output_parser(msg.payload)
+        formatter(msg.payload)
         log.write_to_log(log_dir, ".dir", msg.payload, "Directory listing complete: ")
     else:
         print(f"Error in directory listing: {ERROR_TABLE[msg.result_code]}")
 
     return
 
-def file_output_parser(file_input):
+def formatter(file_input):
     file_struct_size = 320
     file_count = struct.unpack('I', file_input[:4])[0]
 
     file_list = file_input[4:]
-
-    print(file_list[6*320: 7*320-1])
 
     for i in range(file_count):
         x = i * file_struct_size
@@ -82,4 +80,14 @@ def file_output_parser(file_input):
         create_time, access_time, write_time = struct.unpack('QQQ', file_list[x+4:x+28])
         filesize_high, filesize_low = struct.unpack('II', file_list[x+28:x+36])
         filename = struct.unpack('260s', file_list[x+44:x+304])
-        print(filename[0].decode('ascii'))
+
+        size = (filesize_high << 32) + filesize_low
+
+        
+        file_type = "<DIR>" if (16 & file_attrib[0]) else ""
+
+        if file_type:
+            fmt = f"{filetime_to_dt(write_time)}\t{file_type}\t\t\t{filename[0].decode('ascii')}"
+        else:
+            fmt = f"{filetime_to_dt(write_time)}\t{file_type}\t{sizeof_fmt(size):>10}\t{filename[0].decode('ascii')}"
+        print(fmt)
