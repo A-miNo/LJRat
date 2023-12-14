@@ -1,15 +1,51 @@
 import struct
-from helper import str_to_c_str
+import message
+import os
+import log
+from error import *
+from helper import str_to_c_str, get_timestamp_str, filetime_to_dt, sizeof_fmt
 from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x02
 
 def entrypoint(self, args):
-    """Execute a file on remote target
-    'execute netstat -ant'
+    """ Get a file from target
+    'get remote_file.exe'
     """
-    print("Execute")
 
-def _deserialize(data):
-    pass
+    module_args = {"CMD": args, "JOB_ID": ctx.get_next_job()}
+    msg = message.Message(_serialize(module_args))
+    ctx.send_queue.put(msg)
+    return (msg, E_SUCCESS)
+
+
+
+def _serialize(data):
+    serialized_data = bytearray()
+
+    result_code = 0
+    cmd_type = MODULE_ID
+    job_id = data["JOB_ID"]
+    remote_cmd = str_to_c_str(data["CMD"])
+    remote_cmd_len = len(remote_cmd)
+    data_len = HEADER_LEN + INT_SIZE + remote_cmd_len
+
+    serialized_data.extend(struct.pack("I", data_len))
+    serialized_data.extend(struct.pack("I", job_id))
+    serialized_data.extend(struct.pack("I", cmd_type))
+    serialized_data.extend(struct.pack("I", result_code))
+    serialized_data.extend(struct.pack("I", remote_cmd_len))
+    serialized_data.extend(struct.pack(f"{remote_cmd_len}s", remote_cmd))
+
+    return serialized_data
+
+def _deserialize(msg):
+    log_dir = ctx.log_dir + os.sep
+
+    if msg.result_code == E_SUCCESS:
+        log.write_to_log(log_dir, ".execute", ERROR_TABLE[msg.result_code], "Execute command complete: ")
+    else:
+        print(f"Error in execute command: {ERROR_TABLE[msg.result_code]}")
+
+    return

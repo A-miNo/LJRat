@@ -64,7 +64,6 @@ ERROR_T ProcessWork(PMESSAGE pMsg)
         case DIR:
             iError = DirCmd(pMsg, &pResult);
             break;
-
         default:
             break;
     }
