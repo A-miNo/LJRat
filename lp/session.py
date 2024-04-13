@@ -15,7 +15,7 @@ def recv_data(sock):
         data = sock.recv(HEADER_LEN)
     except ConnectionResetError as e:
         return None
-
+    
     header = struct.unpack('IIII', data)
     
     if (header[0] > HEADER_LEN):

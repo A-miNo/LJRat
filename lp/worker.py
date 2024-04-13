@@ -1,25 +1,28 @@
 import threading
 import session
 import message
+import queue
 from globals import ctx
+from context import State
 
 class Recv_Worker(threading.Thread):
-    def __init__(self, conn):
+    def __init__(self):
         super().__init__(target=self.Worker)
-        self.conn = conn
-        self.stop = False
 
     def Worker(self):
-        while not self.stop:
+        while State.DISCONNECTED.value != ctx.state:
             # Lets get one message at a time
             try:
-                data = session.recv_data(self.conn)
+                data = session.recv_data(ctx.conn)
             except ConnectionError as e:
                 print(e)
+            
+            if None == data:
                 self.stop = True
+                ctx.update_state(State.DISCONNECTED.value)
+                continue
 
             msg = message.Message(data)
-            print(f"Debug: {msg.module_id}")
             deserializer = ctx.deserializers[msg.module_id]
 
             deserializer(msg)
@@ -31,12 +34,14 @@ class Recv_Worker(threading.Thread):
 
 
 class Send_Worker(threading.Thread):
-    def __init__(self, conn):
+    def __init__(self):
         super().__init__(target=self.Worker)
-        self.conn = conn
-        self.stop = False
 
     def Worker(self):
-        while ctx.send_queue:
-            msg = ctx.send_queue.get()
-            session.send_data(self.conn, msg.data)
+        while State.DISCONNECTED.value != ctx.state:
+            try:
+                msg = ctx.send_queue.get(True, 1)
+            except queue.Empty:
+                continue
+
+            session.send_data(ctx.conn, msg.data)

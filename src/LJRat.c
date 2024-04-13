@@ -122,6 +122,11 @@ EXPORT_FUNC ERROR_T Run(VOID)
     // TODO implement retry behavior
     iError = SessionConnect(&session_ctx, &addr);
 
+    if (E_SUCCESS != iError)
+    {
+        session_ctx.gShutdown = SHUTDOWN_INITIATED;
+    }
+
     // Set Select timeout to 1 second so we can check for shutdown condition.
     timeout.tv_sec = 1;
 

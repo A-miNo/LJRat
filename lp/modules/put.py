@@ -21,7 +21,6 @@ def entrypoint(self, args):
 
     module_args = {"LOCAL_FILE": args[0],"REMOTE_FILE_NAME": args[1], "JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
-    ctx.send_queue.put(msg)
     return (msg, E_SUCCESS)
 
 def _serialize(data):

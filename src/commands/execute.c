@@ -25,7 +25,7 @@ ERROR_T ExecuteCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
 
     DBG_PRINT("Executing: %s:%d\n", pRemoteCmd, *pRemoteCmdLen);
 
-	iError = CreateProcessA("c:\\windows\\system32\\Cmd.exe", pRemoteCmd, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL,  &startup_info, &process_info);
+	iError = CreateProcessA(NULL, pRemoteCmd, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL,  &startup_info, &process_info);
     if (0 == iError){
         printf("%d\n", GetLastError());
         iError = E_EXECUTE_ERROR;

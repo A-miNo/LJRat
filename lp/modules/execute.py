@@ -16,7 +16,6 @@ def entrypoint(self, args):
 
     module_args = {"CMD": args, "JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
-    ctx.send_queue.put(msg)
     return (msg, E_SUCCESS)
 
 
