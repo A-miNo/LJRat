@@ -3,7 +3,7 @@ LJRat is a modular Windows Remote Access Tool (RAT) capable of remotely controll
 
 Please check out the [Getting Started](https://github.com/A-miNo/LJRat/wiki/Getting-Started) guide.
 
-![remote-shell](Images/LJRat.png)
+![remote-shell](images/LJRat.png)
 
 ## v1.0
 - Get
