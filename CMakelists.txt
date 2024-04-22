@@ -11,7 +11,7 @@ add_library(LJRat_DLL SHARED
     src/commands/put.c
     src/commands/execute.c
     src/commands/dir.c
-    src/commands/execute.c
+    src/commands/disconnect.c
 )
 
 target_include_directories(LJRat_DLL PUBLIC include/)
@@ -28,8 +28,9 @@ add_executable(LJRat_EXE
     src/commands/put.c
     src/commands/execute.c
     src/commands/dir.c
-    src/commands/execute.c
+    src/commands/disconnect.c
 )
+
 
 target_include_directories(LJRat_EXE PUBLIC include/)
 target_link_libraries(LJRat_EXE ws2_32)

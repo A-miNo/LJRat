@@ -1,8 +1,9 @@
 import argparse
 import menu
+import sys
 from modules import * # Used to kick off __all__ in init.py to populate available modules
 from modules import mod_funcs
-from core import * # Used to kick off __all__ in init.py to populate available modules
+from core import * # Used to kick off __all__ in init.py to populate available core modules
 from core import core_funcs
 from globals import ctx
 
@@ -43,7 +44,10 @@ def main():
 
     ctx.log_dir = args.log
 
-    cmd_menu.cmdloop()
+    try:
+        cmd_menu.cmdloop()
+    except KeyboardInterrupt as e:
+        sys.exit()
 
 if __name__ == '__main__':
     main()

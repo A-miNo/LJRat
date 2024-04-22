@@ -14,11 +14,16 @@ def entrypoint(self, args):
     'get remote_file.exe'
     """
 
+    args = validator(args)
+    if not args:
+        return None
+
     module_args = {"CMD": args, "JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
     return (msg, E_SUCCESS)
 
-
+def validator(args):
+    return
 
 def _serialize(data):
     serialized_data = bytearray()

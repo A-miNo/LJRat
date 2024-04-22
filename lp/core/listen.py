@@ -1,5 +1,6 @@
 from globals import ctx
 from context import State
+from error import SYNTAX_TABLE, E_LISTEN_ERROR
 import socket
 import sys
 import select
@@ -7,8 +8,11 @@ import worker
 
 def entrypoint(self, args):
     args = args.split()
-    if len(args) != 3:
-        return
+
+    args = validator(args)
+    if not args:
+        return None
+    
 
     print(f"Waitng for connection on {args[1]}:{args[2]}")
     listen_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
@@ -43,3 +47,11 @@ def entrypoint(self, args):
 
 
     return
+
+def validator(args):
+    args = args
+    if len(args) != 3:
+        print(SYNTAX_TABLE[E_LISTEN_ERROR])
+        args = None
+    
+    return args

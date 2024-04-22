@@ -16,3 +16,8 @@ ERROR_TABLE = {
     0x1004: "Error executing command"
     
 }
+
+E_LISTEN_ERROR = 0x2000
+SYNTAX_TABLE = {
+    0x2000: "Syntax Error: listen [name] [ip] [port]"
+}

@@ -12,7 +12,8 @@ enum CMD_TYPE {
     GET = 0x01,
     EXECUTE,
     PUT,
-    DIR
+    DIR,
+    DISCONNECT
 };
 
 static ERROR_T ProcessWork(PMESSAGE pMsg);
@@ -64,6 +65,9 @@ ERROR_T ProcessWork(PMESSAGE pMsg)
         case DIR:
             iError = DirCmd(pMsg, &pResult);
             break;
+        case DISCONNECT:
+            iError = DisconnectCmd(pMsg, &pResult);
+            session_ctx.gShutdown = SHUTDOWN_INITIATED;
         default:
             break;
     }

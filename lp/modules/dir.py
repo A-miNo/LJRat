@@ -23,12 +23,6 @@ def entrypoint(self, args):
     return (msg, E_SUCCESS)
 
 def validator(args):
-    ret_val = True
-
-    # Ensure args not empty
-    if not args:
-        ret_val = False
-
     # Ensure path ends in '\*' for winapi call
     if not args.endswith('\*'):
         args += '\*'

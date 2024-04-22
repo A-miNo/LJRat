@@ -7,23 +7,17 @@ from helper import str_to_c_str, get_timestamp_str
 from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
-MODULE_ID = 0x01
+MODULE_ID = 0x05
 
 def entrypoint(self, args):
-    """ Get a file from target
-    'get remote_file.exe'
+    """ Stop implant from running on target
+    'disconnect'
     """
 
-    args = validator(args)
-    if not args:
-        return None
-
-    module_args = {"REMOTE_FILE": args, "JOB_ID": ctx.get_next_job()}
+    module_args = {"JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
     return (msg, E_SUCCESS)
 
-def validator(args):
-    return
 
 def _serialize(data):
     serialized_data = bytearray()
@@ -31,25 +25,22 @@ def _serialize(data):
     result_code = 0
     cmd_type = MODULE_ID
     job_id = data["JOB_ID"]
-    remote_file = str_to_c_str(data["REMOTE_FILE"])
-    remote_filename_len = len(remote_file)
-    data_len = HEADER_LEN + INT_SIZE + remote_filename_len
+    data_len = HEADER_LEN + INT_SIZE
 
     serialized_data.extend(struct.pack("I", data_len))
     serialized_data.extend(struct.pack("I", job_id))
     serialized_data.extend(struct.pack("I", cmd_type))
     serialized_data.extend(struct.pack("I", result_code))
-    serialized_data.extend(struct.pack("I", remote_filename_len))
-    serialized_data.extend(struct.pack(f"{remote_filename_len}s", remote_file))
+    serialized_data.extend(struct.pack("I", 0)) # Unused int to conform to server specification
 
     return serialized_data
 
 def _deserialize(msg):
-    log_dir = ctx.log_dir + os.sep + "downloads"
+    log_dir = ctx.log_dir
 
     if msg.result_code == E_SUCCESS:
-        log.write_to_log(log_dir, ".download", msg.payload, "File successfully downloaded to: ")
+        log.write_to_log(log_dir, ".disconnect", ERROR_TABLE[msg.result_code], "Disonnect command successful")
     else:
-        print(f"Error downloading file: {ERROR_TABLE[msg.result_code]}")
+        print(f"Error disonnecting: {ERROR_TABLE[msg.result_code]}")
 
     return

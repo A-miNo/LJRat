@@ -15,13 +15,20 @@ def entrypoint(self, args):
     """
     
     # Validate local file exists prior to building the message
-    args = args.split()
-    if not os.path.exists(args[0]):
-        return (None, E_FILE_EXISTS_ERROR)
+    args = validator(args)
+    if not args:
+        return None
 
     module_args = {"LOCAL_FILE": args[0],"REMOTE_FILE_NAME": args[1], "JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
     return (msg, E_SUCCESS)
+
+
+def validator(args):
+    args = args.split()
+    if not os.path.exists(args[0]):
+        return (None, E_FILE_EXISTS_ERROR)
+    return args
 
 def _serialize(data):
     serialized_data = bytearray()
