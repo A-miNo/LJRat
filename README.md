@@ -1,17 +1,16 @@
 # LJRat
-LJRat is a Remote Access Tool (RAT) project that will be used as a learning tool for me to create a modular/extensible framework for performing Red Team related tasks.
+LJRat is a modular Windows Remote Access Tool (RAT) capable of remotely controlling a Windows Computer. Ideal for learning Red Team techniques in a home lab environment.
 
-## 1.0.0 Objectives
-- Build a core client that is capable of performing Get, Put, Execute, Load
-- Build a modular lp/client that is easily able to integrate new modules
-- Logging framework capable of providing useful command and debugging output
+Please check out the [Getting Started](https://github.com/A-miNo/LJRat/wiki/Getting-Started) guide.
 
-## Future Objectives
-- Unit Tests
-- Encryption for communication
-- Tunneling
-- Modules to extend functionality (Screenshot, injection, netstat, arp, security product evastion, etc)
+![remote-shell](Images/LJRat.png)
 
+## v1.0
+- Get
+- Put
+- Execute
+- Dir
+- Disconnect
 
 ## Building
 The following packages are required to build the RAT Client
