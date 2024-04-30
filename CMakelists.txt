@@ -1,6 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.16)
 PROJECT(LJRat C)
 
+SET(RELEASE_BUILD OFF CACHE BOOL "Check build type")
+
+
 if (MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 endif ()
@@ -39,13 +42,12 @@ add_executable(LJRat_EXE
 target_include_directories(LJRat_EXE PUBLIC include/)
 target_link_libraries(LJRat_EXE ws2_32)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
+if(RELEASE_BUILD)
     add_custom_command(
             TARGET LJRat_EXE POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/build/release
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/lp ${PROJECT_SOURCE_DIR}/build/release
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LJRat_EXE> ${PROJECT_SOURCE_DIR}/build/release
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LJRat_DLL> ${PROJECT_SOURCE_DIR}/build/release
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/build/LJRat_Release
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/lp ${PROJECT_SOURCE_DIR}/build/LJRat_Release
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LJRat_EXE> ${PROJECT_SOURCE_DIR}/build/LJRat_Release
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LJRat_DLL> ${PROJECT_SOURCE_DIR}/build/LJRat_Release
             )
 endif()
-        

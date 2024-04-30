@@ -1,4 +1,7 @@
-# module to write command output to a file
+"""
+Module to write command output to a file
+"""
+ 
 from datetime import datetime
 import os
 

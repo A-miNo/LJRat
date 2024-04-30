@@ -11,7 +11,7 @@ MODULE_ID = 0x04
 
 def entrypoint(self, args):
     """ Get a file from target
-    'get remote_file.exe'
+    'get [remote_file.exe]'
     """
 
     args = validator(args)
@@ -23,7 +23,7 @@ def entrypoint(self, args):
     return (msg, E_SUCCESS)
 
 def validator(args):
-    # Ensure path ends in '\*' for winapi call
+    ''' Ensure path ends in '\*' for winapi call'''
     if not args.endswith('\*'):
         args += '\*'
 
@@ -32,6 +32,7 @@ def validator(args):
 
 
 def _serialize(data):
+    '''Function to take all the required arguments and pack a data structure with binary data'''
     serialized_data = bytearray()
 
     result_code = 0
@@ -51,6 +52,7 @@ def _serialize(data):
     return serialized_data
 
 def _deserialize(msg):
+    '''Function that calls the formatter and outputs the data to a log'''
     log_dir = ctx.log_dir + os.sep
 
     if msg.result_code == E_SUCCESS:
@@ -62,6 +64,8 @@ def _deserialize(msg):
     return
 
 def formatter(file_input):
+    '''Function that knows how the data will be returned from the remote side and
+    turns it into a readable format'''
     file_struct_size = 320
     file_count = struct.unpack('I', file_input[:4])[0]
 

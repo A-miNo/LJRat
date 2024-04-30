@@ -2,8 +2,13 @@
 #include "message.h"
 #include "debug.h"
 #include <windows.h>
-// TODO: Add logic to check for command failure vs fatal failure (memory)
-// TODO: Change out INTS for DWORDS
+
+/*
+@brief Function that executes a directory listing
+@param PMESSAGE containts the parameters for the command
+@param SPMESSAGE is a pointer to the result that will be sent back
+@return ERROR_T with status of dir
+*/
 ERROR_T DirCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
     INT iError = E_SUCCESS;
     PDWORD pRemoteDirNameLen = NULL;
@@ -30,6 +35,7 @@ ERROR_T DirCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
 
 	iFileDataSize = sizeof(WIN32_FIND_DATAA);
 
+	// Count the files so we can pre-allocate enough space for sending back
 	iError = CountFiles(pRemoteDirName, &iFileCount);
 	if (E_DIR_ERROR == iError)
 	{
@@ -86,7 +92,13 @@ end:
 
 }
 
-INT CountFiles(CHAR* path, INT* iFileCount)
+/*
+@brief Helper function to count number of files in a given path
+@param PCHAR diretory name
+@param PINT pointer to an INT to return number of files
+@return ERROR_T with status of dir
+*/
+INT CountFiles(PCHAR path, PINT iFileCount)
 {
 	WIN32_FIND_DATAA file_data = {0};
 	HANDLE hFind = INVALID_HANDLE_VALUE;

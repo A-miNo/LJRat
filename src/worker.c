@@ -1,3 +1,5 @@
+#define WIN32_LEAN_AND_MEAN
+
 #include "LJRat.h"
 #include "worker.h"
 #include "list.h"

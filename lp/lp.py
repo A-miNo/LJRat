@@ -1,3 +1,7 @@
+"""
+LJRat LP core
+"""
+
 import argparse
 import menu
 import sys

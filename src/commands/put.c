@@ -3,7 +3,12 @@
 #include "debug.h"
 #include <Windows.h>
 
-
+/*
+@brief Function that puts a file
+@param PMESSAGE containts the parameters for the command
+@param PMESSAGE is a pointer to the result that will be sent back
+@return ERROR_T with status of dir
+*/
 ERROR_T PutCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
     INT iError = E_SUCCESS;
     PDWORD pLocalFileLen = NULL;

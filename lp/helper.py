@@ -1,3 +1,7 @@
+"""
+Module that adds helper functions that can be utilized throughout modules and LJRat LP
+"""
+
 from datetime import datetime
 
 def get_timestamp_str():

@@ -1,3 +1,7 @@
+"""
+Establishes the menu class and function overloads
+"""
+
 import cmd
 import time
 import error
@@ -6,6 +10,7 @@ from globals import ctx
 from context import State
 
 class Menu(cmd.Cmd):
+    '''Custom implementation of the CMD class'''
     prompt = ctx.prompt
 
     def do_exit(self, arg):
@@ -13,7 +18,7 @@ class Menu(cmd.Cmd):
         return True
 
     def postcmd(self, results, line):
-        ''' Overload function that conducts checks after command is executed'''
+        ''' Overrride function that conducts checks after command is executed'''
 
         # Command modules entry point is executed and returns 'results' which is in tuple format (msg, error_code)
         # Core modules do not send anything to the remote side so None is returned

@@ -6,6 +6,7 @@ from globals import ctx
 from context import State
 
 class Recv_Worker(threading.Thread):
+    '''Thread that waits for data to be sent to process'''
     def __init__(self):
         super().__init__(target=self.Worker)
 
@@ -26,14 +27,12 @@ class Recv_Worker(threading.Thread):
             deserializer = ctx.deserializers[msg.module_id]
 
             deserializer(msg)
-            # Add processed job to list for backgrounding commands
+            # Add processed job to list of completed jobs so menu can continue
             ctx.processed.append(msg.job_id)
-
-            #print(msg)
-            # Find the appropriate deserializer and process the message
 
 
 class Send_Worker(threading.Thread):
+    '''Function to iterate through pending jobs to send to remote side'''
     def __init__(self):
         super().__init__(target=self.Worker)
 

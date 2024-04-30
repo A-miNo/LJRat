@@ -1,13 +1,20 @@
+"""
+Module to write command output to a file
+"""
+
 import struct
 from session import HEADER_LEN
 
 class Message():
+    '''Class that captures the header and data for a message for use by the LP'''
     def __init__(self, data):
+        '''Initialize all the attributes'''
         self.data = data
-        self.process()
+        self._process()
         self.deserializer = None
     
-    def process(self):
+    def _process(self):
+        '''Function that unpacks a messages header information for use in menu post_cmd'''
         self.header = struct.unpack('IIII', self.data[0:16])
         self.size = self.header[0]
         self.job_id = self.header[1]

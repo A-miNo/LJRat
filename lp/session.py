@@ -1,3 +1,7 @@
+"""
+Module to send a receive data
+"""
+
 import struct
 from globals import *
 
@@ -11,6 +15,7 @@ HEADER_LEN = 16
 INT_SIZE = 4
 
 def recv_data(sock):
+    '''Function used to read all of the data for a specific message'''
     try:
         data = sock.recv(HEADER_LEN)
     except ConnectionResetError as e:
@@ -25,4 +30,5 @@ def recv_data(sock):
     return data
 
 def send_data(sock, data):
+    '''Function to send current message'''
     return sock.send(data)

