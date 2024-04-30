@@ -1,6 +1,8 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#define WIN32_LEAN_AND_MEAN
+
 #include <error.h>
 #include <winsock2.h>
 
@@ -19,14 +21,29 @@ typedef struct _message {
 } MESSAGE, *PMESSAGE;
 
 /*
-Function that takes a buffer and a length and sends all of the data to the specified socket
+@brief Function that takes a buffer and a length and sends all of the data to the specified socket
+@param SOCKET of connection
+@param PMESSAGE with data to send
+@return ERROR_T with status of send
 */
 ERROR_T MessageSend(SOCKET sock, PMESSAGE pMessage);
 
+/*
+@brief Function that allocates memory and assigns paramaters to the message
+@param DWORD of unique command ID
+@param DWORD of command type
+@param PVOID of data to be sent back
+@param DWORD size of pData
+@param PMESSAGE of allocated message to be created
+@return ERROR_T with status of send
+*/
 ERROR_T MessageGenerate(DWORD dwCommandId, DWORD dwCommand, PVOID pData, DWORD dwDataLen, PMESSAGE pMessage);
 
 /*
-Function to read a payload from a socket
+@brief Function to read a payload from a socket
+@param SOCKET of connection
+@param PMESSAGE to store data read
+@return ERROR_T with status of send
 */
 ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message);
 

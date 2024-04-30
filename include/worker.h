@@ -4,7 +4,11 @@
 #include <Windows.h>
 #include "error.h"
 
-// Function used to process the commands received from the LP
+/*
+@brief Function used to process the commands received from the LP
+@param Unused
+@return ERROR_T with status of send
+*/
 unsigned int __stdcall WorkerThread(PVOID pArg);
 
 #endif // WORKER_H

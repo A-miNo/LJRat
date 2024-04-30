@@ -1,3 +1,7 @@
+"""
+Module that provides error codes used throughout LJRat
+"""
+
 E_SUCCESS = 0x0000
 E_FAILURE = 0x0001
 E_FILE_EXISTS_ERROR = 0x1000

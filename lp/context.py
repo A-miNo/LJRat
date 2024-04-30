@@ -1,3 +1,7 @@
+"""
+Module that establishes a context that is used throughout the operation of LJRat
+"""
+
 import queue
 import threading
 from enum import Enum
@@ -11,6 +15,7 @@ class Rat_Ctx():
     '''Class that maintains the current state of the RAT'''
 
     def __init__(self):
+        '''Initialize all the attributes'''
         self.job_id = 0
         self.send_queue = queue.Queue()
         self.recv_queue = queue.Queue()
@@ -33,15 +38,17 @@ class Rat_Ctx():
         return job_id
     
     def _increment_job_id(self):
-        '''Increment job-id'''
+        '''Internal fucntion that increments job-id'''
         self.job_id += 1
         return self.job_id
     
     def update_state(self, state):
+        ''' Updates the prompt with current state of the connection'''
         self.state = state
         self.update_prompt()
 
-    def update_prompt(self):
+    def _update_prompt(self):
+        '''Internal function that Updates the prompt with current state of the connection'''
         if self.state == State.DISCONNECTED.value:
             self.prompt = "DISCONNECTED > "
         

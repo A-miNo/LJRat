@@ -3,6 +3,12 @@
 #include "debug.h"
 #include <windows.h>
 
+/*
+@brief Function that disconnects the RAT from the LP
+@param PMESSAGE containts the parameters for the command
+@param PMESSAGE is a pointer to the result that will be sent back
+@return ERROR_T with status of dir
+*/
 ERROR_T DisconnectCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
     INT iError = E_SUCCESS;
 	PBYTE pBuf = NULL;

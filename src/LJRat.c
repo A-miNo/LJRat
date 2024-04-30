@@ -11,9 +11,12 @@
 #include "list.h"
 #include "worker.h"
 
+#define SHUTDOWN_INITIATED 1
+
 SESSION_CTX session_ctx;
 
 #ifndef BUILD_DLL
+#define EXPORT_FUNC
 
 INT main(INT argc, CHAR *argv[])
 {
