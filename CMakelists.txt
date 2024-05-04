@@ -42,6 +42,11 @@ add_executable(LJRat_EXE
 target_include_directories(LJRat_EXE PUBLIC include/)
 target_link_libraries(LJRat_EXE ws2_32)
 
+
+
+
+add_subdirectory(src/modules)
+
 if(RELEASE_BUILD)
     add_custom_command(
             TARGET LJRat_EXE POST_BUILD

@@ -40,13 +40,34 @@ BOOL WINAPI DllMain(
 
 __declspec(dllexport) ERROR_T dll_func(PVOID pArg)
 {
+    INT iError = E_SUCCESS;
+
     PREG_DATA pReg = (PREG_DATA) pArg;
     switch (pReg->dwRegCommand) {
 
         case REG_QUERY:
+           iError = RegQuery(pArg);
             break;
 
         default:
             break;
     }
+
+end:
+    return iError;
+}
+
+ERROR_T RegQuery(PVOID pArg)
+{
+    INT iError = ERROR_SUCCESS;
+
+    if (NULL == pArg)
+    {
+        iError = E_FAILURE;
+        goto end;
+    }
+
+end:
+    return iError;
+
 }

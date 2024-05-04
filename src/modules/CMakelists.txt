@@ -1,0 +1,6 @@
+add_library(REG_MODULE
+SHARED
+reg.c
+)
+
+target_include_directories(REG_MODULE PUBLIC ../../include/)
