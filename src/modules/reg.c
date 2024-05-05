@@ -1,5 +1,9 @@
 #include <Windows.h>
 #include "error.h"
+#include "common.h"
+
+#define MAX_KEY_LENGTH 255
+#define MAX_VALUE_NAME 16383
 
 typedef struct reg_data
 {
@@ -32,6 +36,7 @@ BOOL WINAPI DllMain(
             break;
 
         case DLL_PROCESS_DETACH:
+                                                                           
          // Perform any necessary cleanup.
             break;
     }
@@ -41,12 +46,13 @@ BOOL WINAPI DllMain(
 __declspec(dllexport) ERROR_T dll_func(PVOID pArg)
 {
     INT iError = E_SUCCESS;
+    PCOMMON pCommon = (PCOMMON) pArg;
+    PREG_DATA pReg = (PREG_DATA) pCommon->pData;
 
-    PREG_DATA pReg = (PREG_DATA) pArg;
     switch (pReg->dwRegCommand) {
 
         case REG_QUERY:
-           iError = RegQuery(pArg);
+            iError = RegQuery(pReg);
             break;
 
         default:
@@ -57,17 +63,47 @@ end:
     return iError;
 }
 
-ERROR_T RegQuery(PVOID pArg)
+static  ERROR_T RegQuery(PREG_DATA pReg)
 {
-    INT iError = ERROR_SUCCESS;
-
-    if (NULL == pArg)
+    HANDLE hKey = INVALID_HANDLE_VALUE;
+    INT iError = E_SUCCESS;
+    
+    iError = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft", 0, KEY_READ, &hKey);
+    if (E_SUCCESS != iError)
     {
-        iError = E_FAILURE;
         goto end;
     }
 
+    WCHAR    wKey[MAX_KEY_LENGTH] = {0};   // buffer for subkey name
+    DWORD    dwName = 0;                   // size of name string 
+    WCHAR    wClass[MAX_PATH] = {0};  // buffer for class name 
+    DWORD    dwClassName = MAX_PATH;  // size of class string 
+    DWORD    dwSubKeyCount = 0;               // number of subkeys 
+    DWORD    dwMaxSubKeyLen = 0;              // longest subkey size 
+    DWORD    dwMaxClassLen = 0;              // longest class string 
+    DWORD    dwValues = 0;              // number of values for key 
+    DWORD    dwMaxValueNameLen = 0;          // longest value name 
+    DWORD    dwMaxValueData = 0;       // longest value data 
+    DWORD    dwSecurityDescriptor = 0; // size of security descriptor 
+    FILETIME ftLastWriteTime;      // last write time 
+
+    RegQueryInfoKeyW(
+        hKey,
+        wKey,
+        &dwName,
+        NULL,
+        wClass,
+        &dwSubKeyCount,
+        &dwMaxSubKeyLen,
+        NULL,
+        &dwValues,
+        &dwMaxValueNameLen,
+        &dwMaxValueData,
+        &dwSecurityDescriptor,
+        &ftLastWriteTime        
+        );
+
+        
 end:
     return iError;
-
 }
