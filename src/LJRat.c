@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include <process.h>
 #include "LJRat.h"
-#include "Error.h"
+#include "error_code.h"
 #include "session.h"
 #include "debug.h"
 #include "message.h"

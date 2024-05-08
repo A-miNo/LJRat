@@ -1,7 +1,7 @@
 #include <Winsock2.h>
 #include <Windows.h>
 #include "session.h"
-#include "error.h"
+#include "error_code.h"
 #include "debug.h"
 
 ERROR_T SessionInit(PSESSION_CTX pSession, INT af, INT type, INT protocol) {

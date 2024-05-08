@@ -2,7 +2,7 @@
 #define WORKER_H
 
 #include <Windows.h>
-#include "error.h"
+#include "error_code.h"
 
 /*
 @brief Function used to process the commands received from the LP

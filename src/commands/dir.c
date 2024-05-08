@@ -1,4 +1,4 @@
-#include "error.h"
+#include "error_code.h"
 #include "message.h"
 #include "debug.h"
 #include <windows.h>
@@ -6,7 +6,7 @@
 /*
 @brief Function that executes a directory listing
 @param PMESSAGE containts the parameters for the command
-@param SPMESSAGE is a pointer to the result that will be sent back
+@param PMESSAGE is a pointer to the result that will be sent back
 @return ERROR_T with status of dir
 */
 ERROR_T DirCmd(PMESSAGE pMsg, PMESSAGE *pResult) {

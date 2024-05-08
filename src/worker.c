@@ -3,7 +3,7 @@
 #include "LJRat.h"
 #include "worker.h"
 #include "list.h"
-#include "error.h"
+#include "error_code.h"
 #include "message.h"
 #include "debug.h"
 #include "session.h"

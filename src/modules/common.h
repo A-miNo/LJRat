@@ -13,6 +13,6 @@ typedef struct common_t
 {
     PHEAPALLOCFUNC pHeapAlloc;
     PVOID pData;
-} COMMON, *PCOMMON
+} COMMON, *PCOMMON;
 
 #endif

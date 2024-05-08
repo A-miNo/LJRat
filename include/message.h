@@ -3,7 +3,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 
-#include <error.h>
+#include <error_code.h>
 #include <winsock2.h>
 
 #define MESSAGE_HEADER_LEN 16
