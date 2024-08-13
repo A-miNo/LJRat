@@ -1,4 +1,6 @@
 # LJRat
+![Downloads](https://img.shields.io/github/downloads/A-miNo/LJRat/total)
+
 LJRat is a modular Windows Remote Access Tool (RAT) capable of remotely controlling a Windows Computer. Ideal for learning Red Team techniques in a home lab environment.
 
 Please check out the [Getting Started](https://github.com/A-miNo/LJRat/wiki/Getting-Started) guide.
