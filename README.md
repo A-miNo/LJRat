@@ -3,20 +3,24 @@
 
 LJRat is a modular Windows Remote Access Tool (RAT) capable of remotely controlling a Windows Computer. Ideal for learning Red Team techniques in a home lab environment.
 
-Please check out the [Getting Started](https://github.com/A-miNo/LJRat/wiki/Getting-Started) guide.
+Please check out the [Getting Started](https://github.com/A-miNo/LJRat/wiki) guide.
 
 ![remote-shell](images/LJRat.png)
 
-## v1.0
+## v1.0.1
 - Get
 - Put
 - Execute
 - Dir
 - Disconnect
 
-## Building
-The following packages are required to build the RAT Client
-- Cmake (https://cmake.org/download/)
-- MSVC Build Tools (https://aka.ms/vs/17/release/vs_BuildTools.exe)
-- Python 3.10 (https://www.python.org/downloads/)
-- Run build.bat afer installing the requisite components to generate the client
+## Compatibility
+
+| Windows 10 | 1507 | 1607 | 1809 | 21H2 | 22H2|
+|-|-|-|-|-|-|
+||X|X|X|X|X|
+
+
+| Windows 11 | 21H1 | 22H2 | 23H2 |
+|-|-|-|-|
+||X|X|X|
