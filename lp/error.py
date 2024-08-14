@@ -4,6 +4,7 @@ Module that provides error codes used throughout LJRat
 
 E_SUCCESS = 0x0000
 E_FAILURE = 0x0001
+E_EXIT = 0x0002
 E_FILE_EXISTS_ERROR = 0x1000
 E_GET_ERROR = 0x1001
 E_PUT_ERROR = 0x1002

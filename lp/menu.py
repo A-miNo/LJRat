@@ -15,21 +15,27 @@ class Menu(cmd.Cmd):
 
     def do_exit(self, arg):
         '''Function to exit the CMD.cmdloop by returning True'''
-        return True
+        return (None, E_EXIT)
 
     def postcmd(self, results, line):
         ''' Overrride function that conducts checks after command is executed'''
 
         # Command modules entry point is executed and returns 'results' which is in tuple format (msg, error_code)
         # Core modules do not send anything to the remote side so None is returned
-        if None != results:
-            msg = results[0]
-            ctx.send_queue.put(msg)
-
+        if None != results:   
+            # Not used for anything yet
             error_code = results[1]
+            
+            if E_EXIT == error_code:
+                return True
             if E_SUCCESS != error_code:
                 print(ERROR_TABLE[error_code])
                 return None
+
+            msg = results[0]
+            ctx.send_queue.put(msg)
+
+            
             # Check to see if command that was executed has results that have already processed
             while msg.job_id not in ctx.processed and ctx.state != State.DISCONNECTED.value:
                 time.sleep(1)
@@ -39,3 +45,5 @@ class Menu(cmd.Cmd):
 
 
         return None
+    
+    0

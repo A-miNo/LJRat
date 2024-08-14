@@ -35,7 +35,7 @@ def main():
     # Import all the builtins
     for module in core_funcs:
         print(f"Loading {module}")
-        setattr(type(cmd_menu), 'do_' + module, globals()[module].entrypoint)
+        setattr(cmd_menu, 'do_' + module, globals()[module].entrypoint)
 
     # Build menu by dynamnically importing all modules and assigning
     # their entrypoints as do_ functions so they are populated in the menu
