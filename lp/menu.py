@@ -45,5 +45,3 @@ class Menu(cmd.Cmd):
 
 
         return None
-    
-    0

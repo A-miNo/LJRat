@@ -45,7 +45,7 @@ class Rat_Ctx():
     def update_state(self, state):
         ''' Updates the prompt with current state of the connection'''
         self.state = state
-        self.update_prompt()
+        self._update_prompt()
 
     def _update_prompt(self):
         '''Internal function that Updates the prompt with current state of the connection'''

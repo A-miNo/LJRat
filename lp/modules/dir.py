@@ -1,3 +1,7 @@
+"""
+Module that adds the dir functionality to LJRat
+"""
+
 import struct
 import message
 import os
@@ -10,8 +14,8 @@ from session import HEADER_LEN, INT_SIZE
 MODULE_ID = 0x04
 
 def entrypoint(self, args):
-    """ Get a file from target
-    'get [remote_file.exe]'
+    """ Conduct a directory listing on a target
+    'dir [remote_file.exe]'
     """
 
     args = validator(args)
