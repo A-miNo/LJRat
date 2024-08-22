@@ -14,6 +14,7 @@ add_library(LJRat_DLL SHARED
     src/session.c
     src/list.c
     src/worker.c
+    src/loader.c
     src/commands/get.c
     src/commands/put.c
     src/commands/execute.c
@@ -30,6 +31,7 @@ add_executable(LJRat_EXE
     src/message.c
     src/session.c
     src/list.c
+    src/loader.c
     src/worker.c
     src/commands/get.c
     src/commands/put.c
