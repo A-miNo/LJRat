@@ -1,7 +1,9 @@
-#include "error_code.h"
-#include "message.h"
+#include "commands.h"
 #include "debug.h"
-#include <windows.h>
+#include "LJRat.h"
+#include "session.h"
+
+extern SESSION_CTX session_ctx;
 
 /*
 @brief Function that disconnects the RAT from the LP
@@ -12,6 +14,9 @@
 ERROR_T DisconnectCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
     INT iError = E_SUCCESS;
 	PBYTE pBuf = NULL;
+
+    session_ctx.gShutdown = SHUTDOWN_INITIATED;
+
 
     *pResult = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE));
     if (NULL == pResult) {

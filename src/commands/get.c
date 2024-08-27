@@ -1,7 +1,6 @@
-#include "error_code.h"
-#include "message.h"
+#include "commands.h"
 #include "debug.h"
-#include <windows.h>
+
 
 /*
 @brief Function that gets a file

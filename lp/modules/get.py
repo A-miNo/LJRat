@@ -17,7 +17,7 @@ def entrypoint(self, args):
     """ Get a file from target
     'get remote_file.exe'
     """
-
+    
     args = validator(args)
     if not args:
         return None
@@ -28,7 +28,7 @@ def entrypoint(self, args):
 
 def validator(args):
     '''Function to validate arguments'''
-    return
+    return args
 
 def _serialize(data):
     '''Function to take all the required arguments and pack a data structure with binary data'''
