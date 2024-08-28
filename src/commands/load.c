@@ -13,6 +13,7 @@ extern SESSION_CTX session_ctx;
 */
 ERROR_T LoadCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
     INT iError = E_SUCCESS;
+    PDWORD pRemoteModuleID = NULL;
     PDWORD pDLLFileLen = NULL;
     PBYTE pDLLFile = NULL;
     PVOID pFuncAddr = NULL;
@@ -24,11 +25,14 @@ ERROR_T LoadCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
         goto end;
     }
 
-    pDLLFileLen = (PDWORD) pMsg->pData;
-    pDLLFile = (PCHAR) ((PBYTE) pDLLFileLen + sizeof(DWORD));
+    pRemoteModuleID = (PDWORD) pMsg->pData;
+    pDLLFileLen = ((PBYTE) pRemoteModuleID + sizeof(DWORD));
+    pDLLFile = ((PBYTE) pDLLFileLen + sizeof(DWORD));
+
+    DBG_PRINT("Module Id: %d DLL LEN %d\n", *pRemoteModuleID, *pDLLFileLen);
 
     pDLLAddr = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, *pDLLFileLen);
-    if (NULL == pFuncAddr)
+    if (NULL == pDLLAddr)
     {
         iError = E_MEMORY_ERROR;
         goto end;
@@ -37,16 +41,21 @@ ERROR_T LoadCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
     memcpy(pDLLAddr, pDLLFile, *pDLLFileLen);
 
     pFuncAddr = LoadMemoryModule(pDLLAddr, "func");
+    if (NULL == pFuncAddr)
+    {
+        iError = E_FAILURE;
+        goto end;
+    }
 
-    if ((FUNCARRAYSIZE - 1) < pMsg->hdr.dwCommand)
+    DBG_PRINT("DLL loaded at %p\n", pFuncAddr);
+
+    if ((FUNCARRAYSIZE - 1) < *pRemoteModuleID)
     {
         iError = E_CMD_NOT_FOUND;
         DBG_PRINT("Command not found\n");
         goto end;
     }
     session_ctx.pFuncArray[pMsg->hdr.dwCommand] = pFuncAddr;
-
-    DBG_PRINT("Loading module %d with size: %d\n", pMsg->hdr.dwCommand,  *pDLLFileLen);
 
 end:
     (*pResult)->hdr.dwCommand = pMsg->hdr.dwCommand;

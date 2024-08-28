@@ -7,8 +7,6 @@ import menu
 import sys
 from modules import * # Used to kick off __all__ in init.py to populate available modules
 from modules import mod_funcs
-from core import * # Used to kick off __all__ in init.py to populate available core modules
-from core import core_funcs
 from globals import ctx
 
 def main():
@@ -32,11 +30,6 @@ def main():
 
     cmd_menu = menu.Menu()
 
-    # Import all the builtins
-    for module in core_funcs:
-        print(f"Loading {module}")
-        setattr(type(cmd_menu), 'do_' + module, globals()[module].entrypoint)
-
     # Build menu by dynamnically importing all modules and assigning
     # their entrypoints as do_ functions so they are populated in the menu
     # automagically
@@ -44,6 +37,7 @@ def main():
         print(f"Loading {module}")
         setattr(type(cmd_menu), 'do_' + module, globals()[module].entrypoint)
         ctx.deserializers[globals()[module].MODULE_ID] = globals()[module]._deserialize
+        ctx.loaded_modules[module] = globals()[module].MODULE_ID
 
 
     ctx.log_dir = args.log

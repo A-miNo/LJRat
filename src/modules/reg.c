@@ -165,7 +165,7 @@ int wmain(int argc, WCHAR *argv[])
 
 #else
 
-__declspec(dllexport) ERROR_T dll_func(PMESSAGE pMsg, PMESSAGE *pResult)
+__declspec(dllexport) ERROR_T func(PMESSAGE pMsg, PMESSAGE *pResult)
 {
     INT iError = E_SUCCESS;
     PREG_DATA pReg = (PREG_DATA) pMsg->pData;

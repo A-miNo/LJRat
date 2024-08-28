@@ -174,7 +174,7 @@ ULONG_PTR LoadMemoryModule(PVOID pDll, PCHAR pExportedFunc)
 	pExportFunctionTable = pExportVA->AddressOfFunctions + pDllBaseAddress;
 
 
-	while (dwCounter <= dwNumFuncs)
+	while (dwCounter < dwNumFuncs)
 	{ 
 		pFuncStr = (PCHAR) (*(PDWORD)pExportNameTable + pDllBaseAddress);
 

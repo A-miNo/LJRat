@@ -22,7 +22,7 @@ class Rat_Ctx():
         self.conn = None
         self.processed = []
         self.lock = threading.Lock()
-        self.loaded_modules = []
+        self.loaded_modules = {}
         self.deserializers = {}
         self.log_dir = "logs"
         self.wait_cmd = None

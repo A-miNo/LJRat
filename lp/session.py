@@ -31,4 +31,6 @@ def recv_data(sock):
 
 def send_data(sock, data):
     '''Function to send current message'''
-    return sock.send(data)
+    print(len(data))
+    print(sock.sendall(data))
+    return

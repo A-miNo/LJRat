@@ -26,6 +26,8 @@ static ERROR_T BuildFuncArray()
     session_ctx.pFuncArray[3] = PutCmd;
     session_ctx.pFuncArray[4] = DirCmd;
     session_ctx.pFuncArray[5] = DisconnectCmd;
+    session_ctx.pFuncArray[6] = LoadCmd;
+
 }
 
 

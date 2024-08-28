@@ -1,6 +1,15 @@
-add_library(REG_MODULE
+add_library(reg
 SHARED
 reg.c
 )
 
-target_include_directories(REG_MODULE PUBLIC ../../include/)
+target_include_directories(reg PUBLIC ../../include/)
+
+
+if(RELEASE_BUILD)
+    add_custom_command(
+            TARGET reg POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/lp ${PROJECT_SOURCE_DIR}/build/LJRat_Release
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:reg> ${PROJECT_SOURCE_DIR}/build/LJRat_Release/bin
+            )
+endif()

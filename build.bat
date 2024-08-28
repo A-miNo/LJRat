@@ -18,7 +18,7 @@ else (
 goto end
 
 :blank
-cmake -B build .
+cmake -B build . -DRELEASE_BUILD=1
 cmake --build build
 
 :end

@@ -11,7 +11,7 @@ from helper import str_to_c_str, get_timestamp_str, filetime_to_dt, sizeof_fmt
 from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
-MODULE_ID = 0x06
+MODULE_ID = 0x07
 
 def entrypoint(self, args):
     """ Query the registry
