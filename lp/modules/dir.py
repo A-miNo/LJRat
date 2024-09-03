@@ -12,6 +12,9 @@ from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x04
+LOADABLE = False
+DLL_NAME = None
+PARENT = None
 
 def entrypoint(self, args):
     """ Conduct a directory listing on a target
@@ -67,13 +70,13 @@ def _deserialize(msg):
 
     return
 
-def formatter(file_input):
+def formatter(data):
     '''Function that knows how the data will be returned from the remote side and
     turns it into a readable format'''
     file_struct_size = 320
-    file_count = struct.unpack('I', file_input[:4])[0]
+    file_count = struct.unpack('I', data[:4])[0]
 
-    file_list = file_input[4:]
+    file_list = data[4:]
 
     for i in range(file_count):
         x = i * file_struct_size

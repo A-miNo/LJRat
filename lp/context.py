@@ -54,3 +54,23 @@ class Rat_Ctx():
         
         else:
             self.prompt = f"{self.target_name} > "
+
+    def check_loaded(self, dll_name):
+        for k, v in self.loaded_modules.items():
+            if v.get("dll_name") == dll_name and v.get("loaded") == True:
+                return True
+            
+        return False
+    
+    def update_loaded_module(self, dll_name, job_id, load_complete):
+        # False 
+        if load_complete:
+            for k, v in self.loaded_modules.items():
+                if v.get("dll_name") == dll_name:
+                    self.loaded_modules[k]["job_id"] = job_id
+        else:
+            for k, v in self.loaded_modules.items():
+                if v["job_id"] == job_id:
+                    v["loaded"] = True
+    
+

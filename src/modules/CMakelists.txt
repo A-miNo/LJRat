@@ -1,15 +1,19 @@
-add_library(reg
+add_library(registry
 SHARED
 reg.c
 )
 
-target_include_directories(reg PUBLIC ../../include/)
+target_include_directories(registry PUBLIC ../../include/)
 
 
 if(RELEASE_BUILD)
     add_custom_command(
-            TARGET reg POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/lp ${PROJECT_SOURCE_DIR}/build/LJRat_Release
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:reg> ${PROJECT_SOURCE_DIR}/build/LJRat_Release/bin
+            TARGET registry POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:registry> ${PROJECT_SOURCE_DIR}/build/LJRat_Release/bin
+            )
+else()
+    add_custom_command(
+            TARGET registry POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:registry> ${PROJECT_SOURCE_DIR}/bin
             )
 endif()

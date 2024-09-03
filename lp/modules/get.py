@@ -12,12 +12,15 @@ from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x01
+LOADABLE = False
+DLL_NAME = None
+PARENT = None
 
 def entrypoint(self, args):
     """ Get a file from target
     'get remote_file.exe'
     """
-    
+
     args = validator(args)
     if not args:
         return None

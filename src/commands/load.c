@@ -55,7 +55,7 @@ ERROR_T LoadCmd(PMESSAGE pMsg, PMESSAGE *pResult) {
         DBG_PRINT("Command not found\n");
         goto end;
     }
-    session_ctx.pFuncArray[pMsg->hdr.dwCommand] = pFuncAddr;
+    session_ctx.pFuncArray[*pRemoteModuleID] = pFuncAddr;
 
 end:
     (*pResult)->hdr.dwCommand = pMsg->hdr.dwCommand;

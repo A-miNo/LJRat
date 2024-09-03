@@ -35,9 +35,10 @@ def main():
     # automagically
     for module in mod_funcs:
         print(f"Loading {module}")
-        setattr(type(cmd_menu), 'do_' + module, globals()[module].entrypoint)
-        ctx.deserializers[globals()[module].MODULE_ID] = globals()[module]._deserialize
-        ctx.loaded_modules[module] = globals()[module].MODULE_ID
+        mod = globals()[module]
+        setattr(type(cmd_menu), 'do_' + module, mod.entrypoint)
+        ctx.deserializers[globals()[module].MODULE_ID] = mod._deserialize
+        ctx.loaded_modules[module] = {"module_id" :mod.MODULE_ID, "loaded": True if not mod.LOADABLE else False, "dll_name": mod.DLL_NAME,"parent": mod.PARENT, "job_id": 0}
 
 
     ctx.log_dir = args.log

