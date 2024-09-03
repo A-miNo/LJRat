@@ -12,6 +12,9 @@ from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x05
+LOADABLE = False
+DLL_NAME = None
+PARENT = None
 
 def entrypoint(self, args):
     """ Stop implant from running on target

@@ -1,7 +1,5 @@
-#include "error_code.h"
-#include "message.h"
+#include "commands.h"
 #include "debug.h"
-#include <Windows.h>
 
 /*
 @brief Function that puts a file

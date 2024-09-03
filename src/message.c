@@ -66,6 +66,7 @@ ERROR_T MessageSerialize(PMESSAGE pMessage, WSABUF *pBuf)
             memcpy(pBuf->buf, pMessage, sizeof(MESSAGE_HEADER));
             memcpy(pBuf->buf + sizeof(MESSAGE_HEADER), pMessage->pData, pMessage->hdr.dwMessageSize - sizeof(MESSAGE_HEADER));
             HeapFree(GetProcessHeap(), 0, pMessage->pData);
+            pMessage->pData = NULL;
         }
         pBuf->len = pMessage->hdr.dwMessageSize;
     }
@@ -106,7 +107,9 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
     WSABUF buf = {0};
     DWORD dwBytesReceived = 0;
     INT iError = E_SUCCESS;
+    DWORD dwMessageSize = 0;
     DWORD dwFlags = 0;
+    DWORD dwBytesRecvCounter = 0;
 
     pMessage = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(MESSAGE));
     if (NULL == pMessage) 
@@ -125,9 +128,10 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
         goto end;
     }
 
-    DBG_PRINT("Message size: %d\n", pMessage->hdr.dwMessageSize);
+    dwMessageSize = pMessage->hdr.dwMessageSize - sizeof(MESSAGE_HEADER);
+    DBG_PRINT("Message size: %d\n", dwMessageSize);
 
-    pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, pMessage->hdr.dwMessageSize - sizeof(MESSAGE_HEADER));
+    pData = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwMessageSize);
     if (NULL == pData)
     {
         iError = E_MEMORY_ERROR;
@@ -135,17 +139,28 @@ ERROR_T MessageReceive(SOCKET sock, PMESSAGE *message) {
     }
 
     pMessage->pData = pData;
-    buf.len = pMessage->hdr.dwMessageSize - MESSAGE_HEADER_LEN;
+    buf.len = dwMessageSize;
     buf.buf = pData;
 
-    iError = WSARecv(sock, &buf, 1, &dwBytesReceived, &dwFlags, NULL, NULL);
-
-    if (SOCKET_ERROR == iError)
+    while (dwMessageSize != dwBytesRecvCounter)
     {
-        goto end;
-    }
+        iError = WSARecv(sock, &buf, 1, &dwBytesReceived, &dwFlags, NULL, NULL);
+        if (SOCKET_ERROR == iError)
+        {
+            DBG_PRINT("Socket RECV ret: %d\n", iError);
+            goto end;
+        }
 
-    DBG_PRINT("Received %d bytes\n", dwBytesReceived);
+        dwBytesRecvCounter += dwBytesReceived;
+
+        if (dwMessageSize != dwBytesRecvCounter)
+        {
+            buf.buf += dwBytesReceived;
+            buf.len -= dwBytesReceived;
+            dwBytesReceived = 0;
+        }
+
+    }
 
 end:
 

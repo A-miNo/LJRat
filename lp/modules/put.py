@@ -12,6 +12,9 @@ from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x03
+LOADABLE = False
+DLL_NAME = None
+PARENT = None
 
 def entrypoint(self, args):
     """ Put a file onto remote target

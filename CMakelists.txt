@@ -14,6 +14,8 @@ add_library(LJRat_DLL SHARED
     src/session.c
     src/list.c
     src/worker.c
+    src/loader.c
+    src/commands/load.c
     src/commands/get.c
     src/commands/put.c
     src/commands/execute.c
@@ -30,7 +32,9 @@ add_executable(LJRat_EXE
     src/message.c
     src/session.c
     src/list.c
+    src/loader.c
     src/worker.c
+    src/commands/load.c
     src/commands/get.c
     src/commands/put.c
     src/commands/execute.c
@@ -51,6 +55,7 @@ if(RELEASE_BUILD)
     add_custom_command(
             TARGET LJRat_EXE POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/build/LJRat_Release
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/build/LJRat_Release/bin
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/lp ${PROJECT_SOURCE_DIR}/build/LJRat_Release
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LJRat_EXE> ${PROJECT_SOURCE_DIR}/build/LJRat_Release
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:LJRat_DLL> ${PROJECT_SOURCE_DIR}/build/LJRat_Release

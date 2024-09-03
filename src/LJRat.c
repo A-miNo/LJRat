@@ -162,6 +162,8 @@ EXPORT_FUNC ERROR_T Run(VOID)
 
         }
 
+    DBG_PRINT("SHUTTING DOWN\n");
+
     end:
     if (0 == iStartup)
     {

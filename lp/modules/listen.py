@@ -10,6 +10,10 @@ import sys
 import select
 import worker
 
+MODULE_ID = 0x00
+LOADABLE = False
+DLL_NAME = None
+PARENT = None
 
 def entrypoint(self, args):
     """Listen on a specified ip/port
@@ -64,3 +68,7 @@ def validator(args):
         args = None
     
     return args
+
+def _deserialize(msg):
+    '''Function that calls the formatter and outputs the data to a log'''
+    pass

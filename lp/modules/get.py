@@ -12,6 +12,9 @@ from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x01
+LOADABLE = False
+DLL_NAME = None
+PARENT = None
 
 def entrypoint(self, args):
     """ Get a file from target
@@ -28,7 +31,7 @@ def entrypoint(self, args):
 
 def validator(args):
     '''Function to validate arguments'''
-    return
+    return args
 
 def _serialize(data):
     '''Function to take all the required arguments and pack a data structure with binary data'''

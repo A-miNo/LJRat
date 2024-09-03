@@ -5,8 +5,10 @@
 
 #include <error_code.h>
 #include <winsock2.h>
+#include <stdio.h>
 
 #define MESSAGE_HEADER_LEN 16
+typedef PVOID(*PHEAPALLOCFUNC)(HANDLE, DWORD, size_t);
 
 typedef struct _message_header {
     DWORD dwMessageSize;
@@ -18,6 +20,7 @@ typedef struct _message_header {
 typedef struct _message {
     MESSAGE_HEADER hdr;
     PVOID pData;
+    PHEAPALLOCFUNC pHeapAlloc;
 } MESSAGE, *PMESSAGE;
 
 /*
