@@ -13,7 +13,7 @@ from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x07
-LOADABLE = True
+LOADED = False
 DLL_NAME = "registry.dll"
 PARENT = "registry"
 
@@ -35,7 +35,7 @@ def entrypoint(self, args):
 
     module_args = {"HIVE": args[0], "KEY": args[1], "JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
-    return (msg, E_SUCCESS)
+    return msg
 
 
 def validator(args):
@@ -43,11 +43,6 @@ def validator(args):
     hive_list = {"HKLM": 0x80000002, "HKCR": 0x80000000, "HKCU": 0x80000001, "HKU": 0x80000003, "HKCC": 0x80000005}
     args = args.split('\\', maxsplit=1)
     reg_args = []
-
-    # Check if module is loaded
-    if not ctx.check_loaded(DLL_NAME):
-        print("Module not loaded - 'load_module registry'")
-        return None
 
     # Ensure we are getting a fully formed command
     if len(args) == 0 or len(args) > 2:

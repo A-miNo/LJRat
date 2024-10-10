@@ -4,6 +4,7 @@ Module that establishes a context that is used throughout the operation of LJRat
 
 import queue
 import threading
+import time
 from enum import Enum
 
 class State(Enum):
@@ -55,22 +56,29 @@ class Rat_Ctx():
         else:
             self.prompt = f"{self.target_name} > "
 
-    def check_loaded(self, dll_name):
+    def check_loaded(self, module_id):
+        return self.loaded_modules.get(module_id)["loaded"]
+    
+    def get_module_name(self, module_id):
+        return self.loaded_modules.get(module_id)["dll_name"]
+    
+    def get_module_id (self, module_name):
+        module_id = None
         for k, v in self.loaded_modules.items():
-            if v.get("dll_name") == dll_name and v.get("loaded") == True:
-                return True
-            
-        return False
+            if v.get('dll_name') == module_name:
+                module_id = k
+        return module_id
     
-    def update_loaded_module(self, dll_name, job_id, load_complete):
-        # False 
-        if load_complete:
-            for k, v in self.loaded_modules.items():
-                if v.get("dll_name") == dll_name:
-                    self.loaded_modules[k]["job_id"] = job_id
-        else:
-            for k, v in self.loaded_modules.items():
-                if v["job_id"] == job_id:
-                    v["loaded"] = True
+    def update_loaded(self, module_id):
+        self.loaded_modules[module_id]["loaded"] = True
+        return
     
+    def queue_work(self, msg):
+        self.send_queue.put(msg)
+
+    def queue_work_and_wait(self, msg):
+        self.send_queue.put(msg)
+
+        while (msg.job_id not in self.processed and self.state != State.DISCONNECTED.value):
+            time.sleep(1)
 

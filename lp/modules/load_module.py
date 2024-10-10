@@ -8,13 +8,13 @@ import os
 import log
 from error import *
 from helper import str_to_c_str
-from globals import ctx
+from globals import ctx, MODULE_PATH
 from session import HEADER_LEN, INT_SIZE
 from modules import mod_funcs
 
 
 MODULE_ID = 0x06
-LOADABLE = False
+LOADED = True
 DLL_NAME = None
 PARENT = None
 
@@ -27,43 +27,25 @@ def entrypoint(self, args):
         return None
 
     module_args = {"MODULE_NAME": args[0], "REMOTE_MODULE_ID": args[1], "JOB_ID": ctx.get_next_job()}
-    ctx.update_loaded_module(args[0].split('/')[1], module_args["JOB_ID"], 1)
     msg = message.Message(_serialize(module_args))
-    return (msg, E_SUCCESS)
+    return msg
 
 
 def validator(args):
     '''Function to check if module is already loaded and file exists locally'''
     args = args.split()
-    dll_loaded =  False
-    dll_exists = False
-
-    # Check to see if module is loaded
-    # More advanced modules enable more then one command, will have to look up by parent as well
-    for k, v in ctx.loaded_modules.items():
-        if k == args[0]:
-            dll_exists = True
-            if v.get("loaded") == True:
-                dll_loaded = True
-        if v.get("parent") == args[0]:
-            dll_exists = True
-            if v.get("loaded") == True:
-                dll_loaded = True
-    
-    if dll_exists and dll_loaded:
-        print("Module already loaded")
-        return None
-    elif dll_exists and not dll_loaded:
-        path = 'bin/' + ctx.loaded_modules[k].get("dll_name")
-        module_id = ctx.loaded_modules[k].get("module_id") 
+ 
+    module_id = ctx.get_module_id(args[0])
+    if not ctx.check_loaded(module_id):
+        # Logic to load library
+        module_name = ctx.get_module_name(module_id)
+        path = MODULE_PATH + module_name
 
         if not os.path.exists(path):
             print("Module dll not found on disk")
             return None
+    
         args = [path, module_id]
-    else:
-        print("Unknown module")
-        args =  None
 
     return args
 
@@ -117,8 +99,7 @@ def _deserialize(msg):
     log_dir = ctx.log_dir
 
     if msg.result_code == E_SUCCESS:
-        log.write_to_log(log_dir, ".load", ERROR_TABLE[msg.result_code], "Module loaded successfully")
-        ctx.update_loaded_module(None, msg.job_id, 0)
+        log.write_to_log(log_dir, ".load", ERROR_TABLE[msg.result_code], "Module loaded successfully\n")
     else:
         print(f"Error loading module: {ERROR_TABLE[msg.result_code]}")
 

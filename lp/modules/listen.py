@@ -11,7 +11,7 @@ import select
 import worker
 
 MODULE_ID = 0x00
-LOADABLE = False
+LOADED = True
 DLL_NAME = None
 PARENT = None
 

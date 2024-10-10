@@ -12,7 +12,7 @@ from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x05
-LOADABLE = False
+LOADED = True
 DLL_NAME = None
 PARENT = None
 
@@ -23,7 +23,7 @@ def entrypoint(self, args):
 
     module_args = {"JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
-    return (msg, E_SUCCESS)
+    return msg
 
 def validator(args):
     '''Function to validate arguments'''

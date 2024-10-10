@@ -12,7 +12,7 @@ from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x03
-LOADABLE = False
+LOADED = True
 DLL_NAME = None
 PARENT = None
 
@@ -28,7 +28,7 @@ def entrypoint(self, args):
 
     module_args = {"LOCAL_FILE": args[0],"REMOTE_FILE_NAME": args[1], "JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
-    return (msg, E_SUCCESS)
+    return msg
 
 
 def validator(args):

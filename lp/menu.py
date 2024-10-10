@@ -5,9 +5,13 @@ Establishes the menu class and function overloads
 import cmd
 import time
 import error
+import os
+import modules.load_module
 from error import *
-from globals import ctx
+from globals import ctx, MODULE_PATH
 from context import State
+
+EXIT_VALUE = 0x1
 
 class Menu(cmd.Cmd):
     '''Custom implementation of the CMD class'''
@@ -15,30 +19,25 @@ class Menu(cmd.Cmd):
 
     def do_exit(self, arg):
         '''Function to exit the CMD.cmdloop by returning True'''
-        return (None, E_EXIT)
+        return EXIT_VALUE
 
-    def postcmd(self, results, line):
+    def postcmd(self, msg, line):
         ''' Overrride function that conducts checks after command is executed'''
+        if msg == EXIT_VALUE:
+            return True
+        
+        # Check to see if the command being executed depends on a module that needs to be loaded
+        # More of a nice to have, instead of having to load modules individually
+        if None != msg:
+            if not ctx.check_loaded(msg.module_id):
+                # Logic to load library
+                module_name = ctx.get_module_name(msg.module_id)
+                load_msg = modules.load_module.entrypoint(ctx, module_name)
+                print(f"Loading {module_name}")
+                ctx.queue_work_and_wait(load_msg)
+                ctx.update_loaded(msg.module_id)
 
-        # Command modules entry point is executed and returns 'results' which is in tuple format (msg, error_code)
-        # Core modules do not send anything to the remote side so None is returned
-        if None != results:   
-            # Not used for anything yet
-            error_code = results[1]
-            
-            if E_EXIT == error_code:
-                return True
-            if E_SUCCESS != error_code:
-                print(ERROR_TABLE[error_code])
-                return None
-
-            msg = results[0]
-            ctx.send_queue.put(msg)
-
-            
-            # Check to see if command that was executed has results that have already processed
-            while msg.job_id not in ctx.processed and ctx.state != State.DISCONNECTED.value:
-                time.sleep(1)
+            ctx.queue_work_and_wait(msg)
 
         # Ensure prompt gets update in case of disconnection
         self.prompt = ctx.prompt
