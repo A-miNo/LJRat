@@ -12,9 +12,8 @@ from globals import ctx
 from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x04
-LOADED = False
+LOADED = True
 DLL_NAME = None
-PARENT = None
 
 def entrypoint(self, args):
     """ Conduct a directory listing on a target
@@ -31,6 +30,11 @@ def entrypoint(self, args):
 
 def validator(args):
     ''' Ensure path ends in '\*' for winapi call'''
+    args = args.split()
+    if len(args) < 2:
+        print("Invalid command - Refer to help for valid syntax")
+        return None
+    
     if not args.endswith('\*'):
         args += '\*'
 

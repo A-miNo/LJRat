@@ -14,7 +14,6 @@ from session import HEADER_LEN, INT_SIZE
 MODULE_ID = 0x05
 LOADED = True
 DLL_NAME = None
-PARENT = None
 
 def entrypoint(self, args):
     """ Stop implant from running on target

@@ -13,7 +13,6 @@ import worker
 MODULE_ID = 0x00
 LOADED = True
 DLL_NAME = None
-PARENT = None
 
 def entrypoint(self, args):
     """Listen on a specified ip/port

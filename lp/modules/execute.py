@@ -14,7 +14,6 @@ from session import HEADER_LEN, INT_SIZE
 MODULE_ID = 0x02
 LOADED = True
 DLL_NAME = None
-PARENT = None
 
 def entrypoint(self, args):
     """ Get a file from target
@@ -31,6 +30,11 @@ def entrypoint(self, args):
 
 def validator(args):
     '''Function to validate arguments'''
+    args = args.split()
+    if len(args) < 1:
+        print("Invalid command - Refer to help for valid syntax")
+        return None
+    
     return
 
 def _serialize(data):

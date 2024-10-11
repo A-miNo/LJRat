@@ -14,8 +14,7 @@ from session import HEADER_LEN, INT_SIZE
 
 MODULE_ID = 0x07
 LOADED = False
-DLL_NAME = "registry.dll"
-PARENT = "registry"
+DLL_NAME = "registry"
 
 reg_types = {0:"REG_NONE", 1:"REG_SZ", 2:"REG_EXPAND_SZ", \
                  3:"REG_BINARY", 4:"REG_DWORD", 5:"REG_DWORD_BIG_ENDIAN", \
@@ -41,18 +40,18 @@ def entrypoint(self, args):
 def validator(args):
     '''Nothing checked at this time'''
     hive_list = {"HKLM": 0x80000002, "HKCR": 0x80000000, "HKCU": 0x80000001, "HKU": 0x80000003, "HKCC": 0x80000005}
-    args = args.split('\\', maxsplit=1)
-    reg_args = []
 
-    # Ensure we are getting a fully formed command
-    if len(args) == 0 or len(args) > 2:
+    args = args.split('\\', maxsplit=1)
+    if args == [''] or len(args) > 2:
         print("Invalid command - Refer to help for valid syntax")
         return None
+    
+    reg_args = []
     
     # Make sure we are getting hives we know of
     hive = hive_list.get(args[0].upper(), None)
     if not hive:
-        print("Invalid Hive)")
+        print("Invalid Hive")
         return None
     else:
         reg_args.append(hive)

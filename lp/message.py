@@ -12,6 +12,7 @@ class Message():
         self.data = data
         self._process()
         self.deserializer = None
+        self.remote_module_id = None
     
     def _process(self):
         '''Function that unpacks a messages header information for use in menu post_cmd'''

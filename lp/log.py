@@ -10,7 +10,7 @@ def write_to_log(log_dir, log_suffix, data, msg_txt):
         os.mkdir(log_dir)
     log_name = build_log_name(log_suffix)
     log_file = log_dir + os.sep + log_name
-    print(f"{msg_txt} {log_file}")
+    print(f"{msg_txt} {log_file}\n")
 
     if isinstance(data, bytes):
         with open(log_file, 'wb') as outfile:

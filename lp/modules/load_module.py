@@ -8,7 +8,7 @@ import os
 import log
 from error import *
 from helper import str_to_c_str
-from globals import ctx, MODULE_PATH
+from globals import ctx, MODULE_PATH, DLL_EXT
 from session import HEADER_LEN, INT_SIZE
 from modules import mod_funcs
 
@@ -16,7 +16,6 @@ from modules import mod_funcs
 MODULE_ID = 0x06
 LOADED = True
 DLL_NAME = None
-PARENT = None
 
 def entrypoint(self, args):
     """ Load a module into memory """
@@ -28,18 +27,27 @@ def entrypoint(self, args):
 
     module_args = {"MODULE_NAME": args[0], "REMOTE_MODULE_ID": args[1], "JOB_ID": ctx.get_next_job()}
     msg = message.Message(_serialize(module_args))
+    msg.remote_module_id = args[1]
     return msg
 
 
 def validator(args):
     '''Function to check if module is already loaded and file exists locally'''
     args = args.split()
+    if len(args) < 1:
+        print("Invalid command - Refer to help for valid syntax")
+        return None
+
  
     module_id = ctx.get_module_id(args[0])
+    if not module_id:
+        print("Invalid module")
+        return None
+    
     if not ctx.check_loaded(module_id):
         # Logic to load library
         module_name = ctx.get_module_name(module_id)
-        path = MODULE_PATH + module_name
+        path = MODULE_PATH + module_name + DLL_EXT
 
         if not os.path.exists(path):
             print("Module dll not found on disk")
@@ -47,24 +55,6 @@ def validator(args):
     
         args = [path, module_id]
 
-    return args
-
-
-
-
-    if ctx.loaded_modules[args[0]]["loaded"]:
-        print("Module already loaded")
-        return None
-
-    module_id = ctx.loaded_modules[args[0]]["module_id"]
-    dll_name = ctx.loaded_modules[args[0]]["dll_name"]
-
-    # Need to determine what dll to upload (32/64)
-    path = 'bin/' + dll_name
-
-
-    
-    args = [path, module_id]
     return args
 
 def _serialize(data):
@@ -99,7 +89,7 @@ def _deserialize(msg):
     log_dir = ctx.log_dir
 
     if msg.result_code == E_SUCCESS:
-        log.write_to_log(log_dir, ".load", ERROR_TABLE[msg.result_code], "Module loaded successfully\n")
+        log.write_to_log(log_dir, ".load", ERROR_TABLE[msg.result_code], "Module loaded successfully")
     else:
         print(f"Error loading module: {ERROR_TABLE[msg.result_code]}")
 

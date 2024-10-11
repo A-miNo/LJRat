@@ -38,6 +38,9 @@ class Menu(cmd.Cmd):
                 ctx.update_loaded(msg.module_id)
 
             ctx.queue_work_and_wait(msg)
+            # If a module is loaded independently, we need to be aware and update list
+            if msg.remote_module_id:
+                ctx.update_loaded(msg.remote_module_id)
 
         # Ensure prompt gets update in case of disconnection
         self.prompt = ctx.prompt

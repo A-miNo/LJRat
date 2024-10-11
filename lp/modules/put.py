@@ -14,7 +14,6 @@ from session import HEADER_LEN, INT_SIZE
 MODULE_ID = 0x03
 LOADED = True
 DLL_NAME = None
-PARENT = None
 
 def entrypoint(self, args):
     """ Put a file onto remote target
@@ -34,6 +33,10 @@ def entrypoint(self, args):
 def validator(args):
     '''Function to check if the file exists locally'''
     args = args.split()
+    if len(args) < 2:
+        print("Invalid command - Refer to help for valid syntax")
+        return None
+    
     if not os.path.exists(args[0]):
         return (None, E_FILE_EXISTS_ERROR)
     return args

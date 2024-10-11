@@ -11,8 +11,6 @@ if "%~1"=="" goto blank
 if %1%==Release (
     cmake -B build . -DRELEASE_BUILD=1
     cmake --build build --config %1
-else (
-    goto end
 )
 
 goto end
